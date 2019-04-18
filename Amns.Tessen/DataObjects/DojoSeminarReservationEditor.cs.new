@@ -1,0 +1,1112 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// Default web editor for DojoSeminarReservation.
+	/// </summary>
+	[ToolboxData("<{0}:DojoSeminarReservationEditor runat=server></{0}:DojoSeminarReservationEditor>")]
+	public class DojoSeminarReservationEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+	{
+		private int dojoSeminarReservationID;
+		private DojoSeminarReservation obj;
+		private bool loadFlag = false;
+		private bool resetOnAdd;
+		private bool editOnAdd;
+
+		protected ComponentArt.Web.UI.TabStrip tabstrip;
+		protected ComponentArt.Web.UI.MultiPage multipage;
+		protected Literal headerText;
+
+		#region Private Control Fields for _system Folder
+
+		protected ComponentArt.Web.UI.PageView _systemView;
+
+		#endregion
+
+		#region Private Control Fields for General Folder
+
+		protected ComponentArt.Web.UI.PageView GeneralView;
+		private ComponentArt.Web.UI.ComboBox comboRegistration;
+		private ComponentArt.Web.UI.ComboBox comboParentReservation;
+
+		#endregion
+
+		#region Private Control Fields for Dates Folder
+
+		protected ComponentArt.Web.UI.PageView DatesView;
+		private CheckBox cbIsBlockReservation;
+		private TextBox tbCheckIn;
+		private CheckBox cbCheckOut;
+
+		#endregion
+
+		#region Private Control Fields for Classes Folder
+
+		protected ComponentArt.Web.UI.PageView ClassesView;
+		private CheckBox cbIsClassReservation;
+		private ComponentArt.Web.UI.ComboBox comboClass1;
+		private ComponentArt.Web.UI.ComboBox comboClass2;
+		private ComponentArt.Web.UI.ComboBox comboClass3;
+		private ComponentArt.Web.UI.ComboBox comboClass4;
+		private ComponentArt.Web.UI.ComboBox comboClass5;
+		private ComponentArt.Web.UI.ComboBox comboClass6;
+		private ComponentArt.Web.UI.ComboBox comboClass7;
+		private ComponentArt.Web.UI.ComboBox comboClass8;
+		private ComponentArt.Web.UI.ComboBox comboClass9;
+		private ComponentArt.Web.UI.ComboBox comboClass10;
+
+		#endregion
+
+		#region Private Control Fields for Definitions Folder
+
+		protected ComponentArt.Web.UI.PageView DefinitionsView;
+		private CheckBox cbIsDefinitionReservation;
+		private ComponentArt.Web.UI.ComboBox comboDefinition1;
+		private ComponentArt.Web.UI.ComboBox comboDefinition2;
+		private ComponentArt.Web.UI.ComboBox comboDefinition3;
+
+		#endregion
+
+		private Button btOk;
+		private Button btCancel;
+		private Button btDelete;
+
+		#region Public Control Properties
+
+		[Bindable(true), Category("Data"), DefaultValue(0)]
+		public int DojoSeminarReservationID
+		{
+			get
+			{
+				return dojoSeminarReservationID;
+			}
+			set
+			{
+				loadFlag = true;
+				dojoSeminarReservationID = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool EditOnAdd
+		{
+			get
+			{
+				return editOnAdd;
+			}
+			set
+			{
+				editOnAdd = value;
+			}
+		}
+
+		#endregion
+
+		protected override void CreateChildControls()
+		{
+			Panel container = new Panel();
+			container.CssClass = this.CssClass;
+			Controls.Add(container);
+			Panel header = new Panel();
+			header.CssClass = "pHead";
+			container.Controls.Add(header);
+			headerText = new Literal();
+			header.Controls.Add(headerText);
+			Panel content = new Panel();
+			content.CssClass = "pContent";
+			container.Controls.Add(content);
+			#region Tab Strip
+
+			tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+			// Create the DefaultTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+			defaultTabLook.LookId = "DefaultTabLook";
+			defaultTabLook.CssClass = "DefaultTab";
+			defaultTabLook.HoverCssClass = "DefaultTabHover";
+			defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+			defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+			defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+			defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+			defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+			defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+			defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+			defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+			defaultTabLook.LeftIconWidth = Unit.Parse("3");
+			defaultTabLook.LeftIconHeight = Unit.Parse("21");
+			defaultTabLook.RightIconWidth = Unit.Parse("3");
+			defaultTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(defaultTabLook);
+
+			// Create the SelectedTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+			selectedTabLook.LookId = "SelectedTabLook";
+			selectedTabLook.CssClass = "SelectedTab";
+			selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+			selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+			selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+			selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+			selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+			selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+			selectedTabLook.LeftIconWidth = Unit.Parse("3");
+			selectedTabLook.LeftIconHeight = Unit.Parse("21");
+			selectedTabLook.RightIconWidth = Unit.Parse("3");
+			selectedTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(selectedTabLook);
+
+			tabstrip.ID = this.ID + "_TabStrip";
+			tabstrip.CssClass = "TopGroup";
+			tabstrip.DefaultItemLookId = "DefaultTabLook";
+			tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+			tabstrip.DefaultGroupTabSpacing = 1;
+			tabstrip.ImagesBaseUrl = "tabstrip_images/";
+			tabstrip.MultiPageId = this.ID + "_MultiPage";
+			content.Controls.Add(tabstrip);
+
+			#endregion
+
+			#region MultiPage
+
+			multipage = new ComponentArt.Web.UI.MultiPage();
+			multipage.ID = this.ID + "_MultiPage";
+			multipage.CssClass = "MultiPage";
+			content.Controls.Add(multipage);
+
+			#endregion
+
+			#region Child Controls for General Folder
+
+			GeneralView = new ComponentArt.Web.UI.PageView();
+			GeneralView.CssClass = "PageContent";
+			multipage.PageViews.Add(GeneralView);
+
+			TabStripTab GeneralTab = new TabStripTab();
+			GeneralTab.Text = "General";
+			GeneralTab.PageViewId = GeneralView.ID;
+			tabstrip.Tabs.Add(GeneralTab);
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Registration</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboRegistration = new ComponentArt.Web.UI.ComboBox();
+			comboRegistration.CssClass = "comboBox";
+			comboRegistration.HoverCssClass = "comboBoxHover";
+			comboRegistration.FocusedCssClass = "comboBoxHover";
+			comboRegistration.TextBoxCssClass = "comboTextBox";
+			comboRegistration.DropDownCssClass = "comboDropDown";
+			comboRegistration.ItemCssClass = "comboItem";
+			comboRegistration.ItemHoverCssClass = "comboItemHover";
+			comboRegistration.SelectedItemCssClass = "comboItemHover";
+			comboRegistration.DropHoverImageUrl = "images/drop_hover.gif";
+			comboRegistration.DropImageUrl = "images/drop.gif";
+			comboRegistration.Width = Unit.Pixel(300);
+			GeneralView.Controls.Add(comboRegistration);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ParentReservation</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboParentReservation = new ComponentArt.Web.UI.ComboBox();
+			comboParentReservation.CssClass = "comboBox";
+			comboParentReservation.HoverCssClass = "comboBoxHover";
+			comboParentReservation.FocusedCssClass = "comboBoxHover";
+			comboParentReservation.TextBoxCssClass = "comboTextBox";
+			comboParentReservation.DropDownCssClass = "comboDropDown";
+			comboParentReservation.ItemCssClass = "comboItem";
+			comboParentReservation.ItemHoverCssClass = "comboItemHover";
+			comboParentReservation.SelectedItemCssClass = "comboItemHover";
+			comboParentReservation.DropHoverImageUrl = "images/drop_hover.gif";
+			comboParentReservation.DropImageUrl = "images/drop.gif";
+			comboParentReservation.Width = Unit.Pixel(300);
+			GeneralView.Controls.Add(comboParentReservation);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Dates Folder
+
+			DatesView = new ComponentArt.Web.UI.PageView();
+			DatesView.CssClass = "PageContent";
+			multipage.PageViews.Add(DatesView);
+
+			TabStripTab DatesTab = new TabStripTab();
+			DatesTab.Text = "Dates";
+			DatesTab.PageViewId = DatesView.ID;
+			tabstrip.Tabs.Add(DatesTab);
+
+			DatesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DatesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">IsBlockReservation</span>"));
+			DatesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsBlockReservation = new CheckBox();
+			cbIsBlockReservation.EnableViewState = false;
+			DatesView.Controls.Add(cbIsBlockReservation);
+			DatesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DatesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DatesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">CheckIn</span>"));
+			DatesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbCheckIn = new TextBox();
+			tbCheckIn.EnableViewState = false;
+			DatesView.Controls.Add(tbCheckIn);
+			DatesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DatesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DatesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">CheckOut</span>"));
+			DatesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbCheckOut = new CheckBox();
+			cbCheckOut.EnableViewState = false;
+			DatesView.Controls.Add(cbCheckOut);
+			DatesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Classes Folder
+
+			ClassesView = new ComponentArt.Web.UI.PageView();
+			ClassesView.CssClass = "PageContent";
+			multipage.PageViews.Add(ClassesView);
+
+			TabStripTab ClassesTab = new TabStripTab();
+			ClassesTab.Text = "Classes";
+			ClassesTab.PageViewId = ClassesView.ID;
+			tabstrip.Tabs.Add(ClassesTab);
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">IsClassReservation</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsClassReservation = new CheckBox();
+			cbIsClassReservation.EnableViewState = false;
+			ClassesView.Controls.Add(cbIsClassReservation);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class1</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass1 = new ComponentArt.Web.UI.ComboBox();
+			comboClass1.CssClass = "comboBox";
+			comboClass1.HoverCssClass = "comboBoxHover";
+			comboClass1.FocusedCssClass = "comboBoxHover";
+			comboClass1.TextBoxCssClass = "comboTextBox";
+			comboClass1.DropDownCssClass = "comboDropDown";
+			comboClass1.ItemCssClass = "comboItem";
+			comboClass1.ItemHoverCssClass = "comboItemHover";
+			comboClass1.SelectedItemCssClass = "comboItemHover";
+			comboClass1.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass1.DropImageUrl = "images/drop.gif";
+			comboClass1.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass1);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class2</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass2 = new ComponentArt.Web.UI.ComboBox();
+			comboClass2.CssClass = "comboBox";
+			comboClass2.HoverCssClass = "comboBoxHover";
+			comboClass2.FocusedCssClass = "comboBoxHover";
+			comboClass2.TextBoxCssClass = "comboTextBox";
+			comboClass2.DropDownCssClass = "comboDropDown";
+			comboClass2.ItemCssClass = "comboItem";
+			comboClass2.ItemHoverCssClass = "comboItemHover";
+			comboClass2.SelectedItemCssClass = "comboItemHover";
+			comboClass2.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass2.DropImageUrl = "images/drop.gif";
+			comboClass2.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass2);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class3</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass3 = new ComponentArt.Web.UI.ComboBox();
+			comboClass3.CssClass = "comboBox";
+			comboClass3.HoverCssClass = "comboBoxHover";
+			comboClass3.FocusedCssClass = "comboBoxHover";
+			comboClass3.TextBoxCssClass = "comboTextBox";
+			comboClass3.DropDownCssClass = "comboDropDown";
+			comboClass3.ItemCssClass = "comboItem";
+			comboClass3.ItemHoverCssClass = "comboItemHover";
+			comboClass3.SelectedItemCssClass = "comboItemHover";
+			comboClass3.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass3.DropImageUrl = "images/drop.gif";
+			comboClass3.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass3);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class4</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass4 = new ComponentArt.Web.UI.ComboBox();
+			comboClass4.CssClass = "comboBox";
+			comboClass4.HoverCssClass = "comboBoxHover";
+			comboClass4.FocusedCssClass = "comboBoxHover";
+			comboClass4.TextBoxCssClass = "comboTextBox";
+			comboClass4.DropDownCssClass = "comboDropDown";
+			comboClass4.ItemCssClass = "comboItem";
+			comboClass4.ItemHoverCssClass = "comboItemHover";
+			comboClass4.SelectedItemCssClass = "comboItemHover";
+			comboClass4.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass4.DropImageUrl = "images/drop.gif";
+			comboClass4.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass4);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class5</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass5 = new ComponentArt.Web.UI.ComboBox();
+			comboClass5.CssClass = "comboBox";
+			comboClass5.HoverCssClass = "comboBoxHover";
+			comboClass5.FocusedCssClass = "comboBoxHover";
+			comboClass5.TextBoxCssClass = "comboTextBox";
+			comboClass5.DropDownCssClass = "comboDropDown";
+			comboClass5.ItemCssClass = "comboItem";
+			comboClass5.ItemHoverCssClass = "comboItemHover";
+			comboClass5.SelectedItemCssClass = "comboItemHover";
+			comboClass5.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass5.DropImageUrl = "images/drop.gif";
+			comboClass5.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass5);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class6</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass6 = new ComponentArt.Web.UI.ComboBox();
+			comboClass6.CssClass = "comboBox";
+			comboClass6.HoverCssClass = "comboBoxHover";
+			comboClass6.FocusedCssClass = "comboBoxHover";
+			comboClass6.TextBoxCssClass = "comboTextBox";
+			comboClass6.DropDownCssClass = "comboDropDown";
+			comboClass6.ItemCssClass = "comboItem";
+			comboClass6.ItemHoverCssClass = "comboItemHover";
+			comboClass6.SelectedItemCssClass = "comboItemHover";
+			comboClass6.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass6.DropImageUrl = "images/drop.gif";
+			comboClass6.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass6);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class7</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass7 = new ComponentArt.Web.UI.ComboBox();
+			comboClass7.CssClass = "comboBox";
+			comboClass7.HoverCssClass = "comboBoxHover";
+			comboClass7.FocusedCssClass = "comboBoxHover";
+			comboClass7.TextBoxCssClass = "comboTextBox";
+			comboClass7.DropDownCssClass = "comboDropDown";
+			comboClass7.ItemCssClass = "comboItem";
+			comboClass7.ItemHoverCssClass = "comboItemHover";
+			comboClass7.SelectedItemCssClass = "comboItemHover";
+			comboClass7.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass7.DropImageUrl = "images/drop.gif";
+			comboClass7.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass7);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class8</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass8 = new ComponentArt.Web.UI.ComboBox();
+			comboClass8.CssClass = "comboBox";
+			comboClass8.HoverCssClass = "comboBoxHover";
+			comboClass8.FocusedCssClass = "comboBoxHover";
+			comboClass8.TextBoxCssClass = "comboTextBox";
+			comboClass8.DropDownCssClass = "comboDropDown";
+			comboClass8.ItemCssClass = "comboItem";
+			comboClass8.ItemHoverCssClass = "comboItemHover";
+			comboClass8.SelectedItemCssClass = "comboItemHover";
+			comboClass8.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass8.DropImageUrl = "images/drop.gif";
+			comboClass8.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass8);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class9</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass9 = new ComponentArt.Web.UI.ComboBox();
+			comboClass9.CssClass = "comboBox";
+			comboClass9.HoverCssClass = "comboBoxHover";
+			comboClass9.FocusedCssClass = "comboBoxHover";
+			comboClass9.TextBoxCssClass = "comboTextBox";
+			comboClass9.DropDownCssClass = "comboDropDown";
+			comboClass9.ItemCssClass = "comboItem";
+			comboClass9.ItemHoverCssClass = "comboItemHover";
+			comboClass9.SelectedItemCssClass = "comboItemHover";
+			comboClass9.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass9.DropImageUrl = "images/drop.gif";
+			comboClass9.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass9);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			ClassesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class10</span>"));
+			ClassesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboClass10 = new ComponentArt.Web.UI.ComboBox();
+			comboClass10.CssClass = "comboBox";
+			comboClass10.HoverCssClass = "comboBoxHover";
+			comboClass10.FocusedCssClass = "comboBoxHover";
+			comboClass10.TextBoxCssClass = "comboTextBox";
+			comboClass10.DropDownCssClass = "comboDropDown";
+			comboClass10.ItemCssClass = "comboItem";
+			comboClass10.ItemHoverCssClass = "comboItemHover";
+			comboClass10.SelectedItemCssClass = "comboItemHover";
+			comboClass10.DropHoverImageUrl = "images/drop_hover.gif";
+			comboClass10.DropImageUrl = "images/drop.gif";
+			comboClass10.Width = Unit.Pixel(300);
+			ClassesView.Controls.Add(comboClass10);
+			ClassesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Definitions Folder
+
+			DefinitionsView = new ComponentArt.Web.UI.PageView();
+			DefinitionsView.CssClass = "PageContent";
+			multipage.PageViews.Add(DefinitionsView);
+
+			TabStripTab DefinitionsTab = new TabStripTab();
+			DefinitionsTab.Text = "Definitions";
+			DefinitionsTab.PageViewId = DefinitionsView.ID;
+			tabstrip.Tabs.Add(DefinitionsTab);
+
+			DefinitionsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">IsDefinitionReservation</span>"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsDefinitionReservation = new CheckBox();
+			cbIsDefinitionReservation.EnableViewState = false;
+			DefinitionsView.Controls.Add(cbIsDefinitionReservation);
+			DefinitionsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefinitionsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Definition1</span>"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboDefinition1 = new ComponentArt.Web.UI.ComboBox();
+			comboDefinition1.CssClass = "comboBox";
+			comboDefinition1.HoverCssClass = "comboBoxHover";
+			comboDefinition1.FocusedCssClass = "comboBoxHover";
+			comboDefinition1.TextBoxCssClass = "comboTextBox";
+			comboDefinition1.DropDownCssClass = "comboDropDown";
+			comboDefinition1.ItemCssClass = "comboItem";
+			comboDefinition1.ItemHoverCssClass = "comboItemHover";
+			comboDefinition1.SelectedItemCssClass = "comboItemHover";
+			comboDefinition1.DropHoverImageUrl = "images/drop_hover.gif";
+			comboDefinition1.DropImageUrl = "images/drop.gif";
+			comboDefinition1.Width = Unit.Pixel(300);
+			DefinitionsView.Controls.Add(comboDefinition1);
+			DefinitionsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefinitionsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Definition2</span>"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboDefinition2 = new ComponentArt.Web.UI.ComboBox();
+			comboDefinition2.CssClass = "comboBox";
+			comboDefinition2.HoverCssClass = "comboBoxHover";
+			comboDefinition2.FocusedCssClass = "comboBoxHover";
+			comboDefinition2.TextBoxCssClass = "comboTextBox";
+			comboDefinition2.DropDownCssClass = "comboDropDown";
+			comboDefinition2.ItemCssClass = "comboItem";
+			comboDefinition2.ItemHoverCssClass = "comboItemHover";
+			comboDefinition2.SelectedItemCssClass = "comboItemHover";
+			comboDefinition2.DropHoverImageUrl = "images/drop_hover.gif";
+			comboDefinition2.DropImageUrl = "images/drop.gif";
+			comboDefinition2.Width = Unit.Pixel(300);
+			DefinitionsView.Controls.Add(comboDefinition2);
+			DefinitionsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefinitionsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Definition3</span>"));
+			DefinitionsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboDefinition3 = new ComponentArt.Web.UI.ComboBox();
+			comboDefinition3.CssClass = "comboBox";
+			comboDefinition3.HoverCssClass = "comboBoxHover";
+			comboDefinition3.FocusedCssClass = "comboBoxHover";
+			comboDefinition3.TextBoxCssClass = "comboTextBox";
+			comboDefinition3.DropDownCssClass = "comboDropDown";
+			comboDefinition3.ItemCssClass = "comboItem";
+			comboDefinition3.ItemHoverCssClass = "comboItemHover";
+			comboDefinition3.SelectedItemCssClass = "comboItemHover";
+			comboDefinition3.DropHoverImageUrl = "images/drop_hover.gif";
+			comboDefinition3.DropImageUrl = "images/drop.gif";
+			comboDefinition3.Width = Unit.Pixel(300);
+			DefinitionsView.Controls.Add(comboDefinition3);
+			DefinitionsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			Panel buttons = new Panel();
+			buttons.CssClass = "pButtons";
+			content.Controls.Add(buttons);
+
+			btOk = new Button();
+			btOk.Text = "OK";
+			btOk.Width = Unit.Pixel(72);
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			buttons.Controls.Add(btOk);
+
+			btCancel = new Button();
+			btCancel.Text = "Cancel";
+			btCancel.Width = Unit.Pixel(72);
+			btCancel.EnableViewState = false;
+			btCancel.CausesValidation = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			buttons.Controls.Add(btCancel);
+
+			btDelete = new Button();
+			btDelete.Text = "Delete";
+			btDelete.Width = Unit.Pixel(72);
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			buttons.Controls.Add(btDelete);
+
+			bind();
+			ChildControlsCreated = true;
+		}
+
+		private void bind()
+		{
+			#region Bind General Child Data
+
+			DojoSeminarRegistrationManager registrationManager = new DojoSeminarRegistrationManager();
+			DojoSeminarRegistrationCollection registrationCollection = registrationManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem RegistrationNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			RegistrationNullItem.Text = "Null";
+			RegistrationNullItem.Value = "Null";
+			comboRegistration.Items.Add(RegistrationNullItem);
+			foreach(DojoSeminarRegistration registration in registrationCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = registration.ToString();
+				i.Value = registration.ID.ToString();
+				comboRegistration.Items.Add(i);
+			}
+
+			DojoSeminarReservationManager parentReservationManager = new DojoSeminarReservationManager();
+			DojoSeminarReservationCollection parentReservationCollection = parentReservationManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ParentReservationNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ParentReservationNullItem.Text = "Null";
+			ParentReservationNullItem.Value = "Null";
+			comboParentReservation.Items.Add(ParentReservationNullItem);
+			foreach(DojoSeminarReservation parentReservation in parentReservationCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = parentReservation.ToString();
+				i.Value = parentReservation.ID.ToString();
+				comboParentReservation.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Classes Child Data
+
+			DojoClassManager class1Manager = new DojoClassManager();
+			DojoClassCollection class1Collection = class1Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class1NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class1NullItem.Text = "Null";
+			Class1NullItem.Value = "Null";
+			comboClass1.Items.Add(Class1NullItem);
+			foreach(DojoClass class1 in class1Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class1.ToString();
+				i.Value = class1.ID.ToString();
+				comboClass1.Items.Add(i);
+			}
+
+			DojoClassManager class2Manager = new DojoClassManager();
+			DojoClassCollection class2Collection = class2Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class2NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class2NullItem.Text = "Null";
+			Class2NullItem.Value = "Null";
+			comboClass2.Items.Add(Class2NullItem);
+			foreach(DojoClass class2 in class2Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class2.ToString();
+				i.Value = class2.ID.ToString();
+				comboClass2.Items.Add(i);
+			}
+
+			DojoClassManager class3Manager = new DojoClassManager();
+			DojoClassCollection class3Collection = class3Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class3NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class3NullItem.Text = "Null";
+			Class3NullItem.Value = "Null";
+			comboClass3.Items.Add(Class3NullItem);
+			foreach(DojoClass class3 in class3Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class3.ToString();
+				i.Value = class3.ID.ToString();
+				comboClass3.Items.Add(i);
+			}
+
+			DojoClassManager class4Manager = new DojoClassManager();
+			DojoClassCollection class4Collection = class4Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class4NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class4NullItem.Text = "Null";
+			Class4NullItem.Value = "Null";
+			comboClass4.Items.Add(Class4NullItem);
+			foreach(DojoClass class4 in class4Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class4.ToString();
+				i.Value = class4.ID.ToString();
+				comboClass4.Items.Add(i);
+			}
+
+			DojoClassManager class5Manager = new DojoClassManager();
+			DojoClassCollection class5Collection = class5Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class5NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class5NullItem.Text = "Null";
+			Class5NullItem.Value = "Null";
+			comboClass5.Items.Add(Class5NullItem);
+			foreach(DojoClass class5 in class5Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class5.ToString();
+				i.Value = class5.ID.ToString();
+				comboClass5.Items.Add(i);
+			}
+
+			DojoClassManager class6Manager = new DojoClassManager();
+			DojoClassCollection class6Collection = class6Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class6NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class6NullItem.Text = "Null";
+			Class6NullItem.Value = "Null";
+			comboClass6.Items.Add(Class6NullItem);
+			foreach(DojoClass class6 in class6Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class6.ToString();
+				i.Value = class6.ID.ToString();
+				comboClass6.Items.Add(i);
+			}
+
+			DojoClassManager class7Manager = new DojoClassManager();
+			DojoClassCollection class7Collection = class7Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class7NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class7NullItem.Text = "Null";
+			Class7NullItem.Value = "Null";
+			comboClass7.Items.Add(Class7NullItem);
+			foreach(DojoClass class7 in class7Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class7.ToString();
+				i.Value = class7.ID.ToString();
+				comboClass7.Items.Add(i);
+			}
+
+			DojoClassManager class8Manager = new DojoClassManager();
+			DojoClassCollection class8Collection = class8Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class8NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class8NullItem.Text = "Null";
+			Class8NullItem.Value = "Null";
+			comboClass8.Items.Add(Class8NullItem);
+			foreach(DojoClass class8 in class8Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class8.ToString();
+				i.Value = class8.ID.ToString();
+				comboClass8.Items.Add(i);
+			}
+
+			DojoClassManager class9Manager = new DojoClassManager();
+			DojoClassCollection class9Collection = class9Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class9NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class9NullItem.Text = "Null";
+			Class9NullItem.Value = "Null";
+			comboClass9.Items.Add(Class9NullItem);
+			foreach(DojoClass class9 in class9Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class9.ToString();
+				i.Value = class9.ID.ToString();
+				comboClass9.Items.Add(i);
+			}
+
+			DojoClassManager class10Manager = new DojoClassManager();
+			DojoClassCollection class10Collection = class10Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Class10NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Class10NullItem.Text = "Null";
+			Class10NullItem.Value = "Null";
+			comboClass10.Items.Add(Class10NullItem);
+			foreach(DojoClass class10 in class10Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = class10.ToString();
+				i.Value = class10.ID.ToString();
+				comboClass10.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Definitions Child Data
+
+			DojoClassDefinitionManager definition1Manager = new DojoClassDefinitionManager();
+			DojoClassDefinitionCollection definition1Collection = definition1Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Definition1NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Definition1NullItem.Text = "Null";
+			Definition1NullItem.Value = "Null";
+			comboDefinition1.Items.Add(Definition1NullItem);
+			foreach(DojoClassDefinition definition1 in definition1Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = definition1.ToString();
+				i.Value = definition1.ID.ToString();
+				comboDefinition1.Items.Add(i);
+			}
+
+			DojoClassDefinitionManager definition2Manager = new DojoClassDefinitionManager();
+			DojoClassDefinitionCollection definition2Collection = definition2Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Definition2NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Definition2NullItem.Text = "Null";
+			Definition2NullItem.Value = "Null";
+			comboDefinition2.Items.Add(Definition2NullItem);
+			foreach(DojoClassDefinition definition2 in definition2Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = definition2.ToString();
+				i.Value = definition2.ID.ToString();
+				comboDefinition2.Items.Add(i);
+			}
+
+			DojoClassDefinitionManager definition3Manager = new DojoClassDefinitionManager();
+			DojoClassDefinitionCollection definition3Collection = definition3Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem Definition3NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			Definition3NullItem.Text = "Null";
+			Definition3NullItem.Value = "Null";
+			comboDefinition3.Items.Add(Definition3NullItem);
+			foreach(DojoClassDefinition definition3 in definition3Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = definition3.ToString();
+				i.Value = definition3.ID.ToString();
+				comboDefinition3.Items.Add(i);
+			}
+
+			#endregion
+
+		}
+
+		#region Events
+
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(dojoSeminarReservationID == 0)
+				obj = new DojoSeminarReservation();
+			else
+				obj = new DojoSeminarReservation(dojoSeminarReservationID);
+
+			if(comboRegistration.SelectedItem != null && comboRegistration.SelectedItem.Value != "Null")
+				obj.Registration = DojoSeminarRegistration.NewPlaceHolder(
+					int.Parse(comboRegistration.SelectedItem.Value));
+			else
+				obj.Registration = null;
+
+			if(comboParentReservation.SelectedItem != null && comboParentReservation.SelectedItem.Value != "Null")
+				obj.ParentReservation = DojoSeminarReservation.NewPlaceHolder(
+					int.Parse(comboParentReservation.SelectedItem.Value));
+			else
+				obj.ParentReservation = null;
+
+			obj.IsBlockReservation = cbIsBlockReservation.Checked;
+			obj.CheckIn = DateTime.Parse(tbCheckIn.Text);
+			obj.CheckOut = cbCheckOut.Checked;
+			obj.IsClassReservation = cbIsClassReservation.Checked;
+			if(comboClass1.SelectedItem != null && comboClass1.SelectedItem.Value != "Null")
+				obj.Class1 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass1.SelectedItem.Value));
+			else
+				obj.Class1 = null;
+
+			if(comboClass2.SelectedItem != null && comboClass2.SelectedItem.Value != "Null")
+				obj.Class2 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass2.SelectedItem.Value));
+			else
+				obj.Class2 = null;
+
+			if(comboClass3.SelectedItem != null && comboClass3.SelectedItem.Value != "Null")
+				obj.Class3 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass3.SelectedItem.Value));
+			else
+				obj.Class3 = null;
+
+			if(comboClass4.SelectedItem != null && comboClass4.SelectedItem.Value != "Null")
+				obj.Class4 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass4.SelectedItem.Value));
+			else
+				obj.Class4 = null;
+
+			if(comboClass5.SelectedItem != null && comboClass5.SelectedItem.Value != "Null")
+				obj.Class5 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass5.SelectedItem.Value));
+			else
+				obj.Class5 = null;
+
+			if(comboClass6.SelectedItem != null && comboClass6.SelectedItem.Value != "Null")
+				obj.Class6 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass6.SelectedItem.Value));
+			else
+				obj.Class6 = null;
+
+			if(comboClass7.SelectedItem != null && comboClass7.SelectedItem.Value != "Null")
+				obj.Class7 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass7.SelectedItem.Value));
+			else
+				obj.Class7 = null;
+
+			if(comboClass8.SelectedItem != null && comboClass8.SelectedItem.Value != "Null")
+				obj.Class8 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass8.SelectedItem.Value));
+			else
+				obj.Class8 = null;
+
+			if(comboClass9.SelectedItem != null && comboClass9.SelectedItem.Value != "Null")
+				obj.Class9 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass9.SelectedItem.Value));
+			else
+				obj.Class9 = null;
+
+			if(comboClass10.SelectedItem != null && comboClass10.SelectedItem.Value != "Null")
+				obj.Class10 = DojoClass.NewPlaceHolder(
+					int.Parse(comboClass10.SelectedItem.Value));
+			else
+				obj.Class10 = null;
+
+			obj.IsDefinitionReservation = cbIsDefinitionReservation.Checked;
+			if(comboDefinition1.SelectedItem != null && comboDefinition1.SelectedItem.Value != "Null")
+				obj.Definition1 = DojoClassDefinition.NewPlaceHolder(
+					int.Parse(comboDefinition1.SelectedItem.Value));
+			else
+				obj.Definition1 = null;
+
+			if(comboDefinition2.SelectedItem != null && comboDefinition2.SelectedItem.Value != "Null")
+				obj.Definition2 = DojoClassDefinition.NewPlaceHolder(
+					int.Parse(comboDefinition2.SelectedItem.Value));
+			else
+				obj.Definition2 = null;
+
+			if(comboDefinition3.SelectedItem != null && comboDefinition3.SelectedItem.Value != "Null")
+				obj.Definition3 = DojoClassDefinition.NewPlaceHolder(
+					int.Parse(comboDefinition3.SelectedItem.Value));
+			else
+				obj.Definition3 = null;
+
+			if(editOnAdd)
+				dojoSeminarReservationID = obj.Save();
+			else
+				obj.Save();
+
+			if(resetOnAdd)
+			{
+				cbIsBlockReservation.Checked = false;
+				tbCheckIn.Text = DateTime.Now.ToString();
+				cbCheckOut.Checked = false;
+				cbIsClassReservation.Checked = false;
+				cbIsDefinitionReservation.Checked = false;
+				msRegistration.SelectedIndex = 0;
+				msParentReservation.SelectedIndex = 0;
+				msClass1.SelectedIndex = 0;
+				msClass2.SelectedIndex = 0;
+				msClass3.SelectedIndex = 0;
+				msClass4.SelectedIndex = 0;
+				msClass5.SelectedIndex = 0;
+				msClass6.SelectedIndex = 0;
+				msClass7.SelectedIndex = 0;
+				msClass8.SelectedIndex = 0;
+				msClass9.SelectedIndex = 0;
+				msClass10.SelectedIndex = 0;
+				msDefinition1.SelectedIndex = 0;
+				msDefinition2.SelectedIndex = 0;
+				msDefinition3.SelectedIndex = 0;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+			DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnPreRender(EventArgs e)
+		{
+			if(loadFlag)
+			{
+				if(dojoSeminarReservationID > 0)
+				{
+					obj = new DojoSeminarReservation(dojoSeminarReservationID);
+					headerText.Text = "Edit  - " + obj.ToString();
+				}
+				else if(dojoSeminarReservationID <= 0)
+				{
+					obj = new DojoSeminarReservation();
+					headerText.Text = "Add ";
+				}
+
+				// Bind General Data
+				if(obj.Registration != null)
+					foreach(ListItem item in comboRegistration.Items)
+						item.Selected = obj.Registration.ID.ToString() == item.Value;
+					else
+						msRegistration.SelectedIndex = 0;
+				if(obj.ParentReservation != null)
+					foreach(ListItem item in comboParentReservation.Items)
+						item.Selected = obj.ParentReservation.ID.ToString() == item.Value;
+					else
+						msParentReservation.SelectedIndex = 0;
+
+				// Bind Dates Data
+				cbIsBlockReservation.Checked = obj.IsBlockReservation;
+				tbCheckIn.Text = obj.CheckIn.ToString();
+				cbCheckOut.Checked = obj.CheckOut;
+
+				// Bind Classes Data
+				cbIsClassReservation.Checked = obj.IsClassReservation;
+				if(obj.Class1 != null)
+					foreach(ListItem item in comboClass1.Items)
+						item.Selected = obj.Class1.ID.ToString() == item.Value;
+					else
+						msClass1.SelectedIndex = 0;
+				if(obj.Class2 != null)
+					foreach(ListItem item in comboClass2.Items)
+						item.Selected = obj.Class2.ID.ToString() == item.Value;
+					else
+						msClass2.SelectedIndex = 0;
+				if(obj.Class3 != null)
+					foreach(ListItem item in comboClass3.Items)
+						item.Selected = obj.Class3.ID.ToString() == item.Value;
+					else
+						msClass3.SelectedIndex = 0;
+				if(obj.Class4 != null)
+					foreach(ListItem item in comboClass4.Items)
+						item.Selected = obj.Class4.ID.ToString() == item.Value;
+					else
+						msClass4.SelectedIndex = 0;
+				if(obj.Class5 != null)
+					foreach(ListItem item in comboClass5.Items)
+						item.Selected = obj.Class5.ID.ToString() == item.Value;
+					else
+						msClass5.SelectedIndex = 0;
+				if(obj.Class6 != null)
+					foreach(ListItem item in comboClass6.Items)
+						item.Selected = obj.Class6.ID.ToString() == item.Value;
+					else
+						msClass6.SelectedIndex = 0;
+				if(obj.Class7 != null)
+					foreach(ListItem item in comboClass7.Items)
+						item.Selected = obj.Class7.ID.ToString() == item.Value;
+					else
+						msClass7.SelectedIndex = 0;
+				if(obj.Class8 != null)
+					foreach(ListItem item in comboClass8.Items)
+						item.Selected = obj.Class8.ID.ToString() == item.Value;
+					else
+						msClass8.SelectedIndex = 0;
+				if(obj.Class9 != null)
+					foreach(ListItem item in comboClass9.Items)
+						item.Selected = obj.Class9.ID.ToString() == item.Value;
+					else
+						msClass9.SelectedIndex = 0;
+				if(obj.Class10 != null)
+					foreach(ListItem item in comboClass10.Items)
+						item.Selected = obj.Class10.ID.ToString() == item.Value;
+					else
+						msClass10.SelectedIndex = 0;
+
+				// Bind Definitions Data
+				cbIsDefinitionReservation.Checked = obj.IsDefinitionReservation;
+				if(obj.Definition1 != null)
+					foreach(ListItem item in comboDefinition1.Items)
+						item.Selected = obj.Definition1.ID.ToString() == item.Value;
+					else
+						msDefinition1.SelectedIndex = 0;
+				if(obj.Definition2 != null)
+					foreach(ListItem item in comboDefinition2.Items)
+						item.Selected = obj.Definition2.ID.ToString() == item.Value;
+					else
+						msDefinition2.SelectedIndex = 0;
+				if(obj.Definition3 != null)
+					foreach(ListItem item in comboDefinition3.Items)
+						item.Selected = obj.Definition3.ID.ToString() == item.Value;
+					else
+						msDefinition3.SelectedIndex = 0;
+				tabstrip.SelectedTab = tabstrip.Tabs[0];
+			}
+		}
+
+		protected override void LoadViewState(object savedState)
+		{
+			if(savedState != null)
+			{
+				object[] myState = (object[]) savedState;
+				if(myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if(myState[1] != null)
+					dojoSeminarReservationID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{
+			object baseState = base.SaveViewState();
+			object[] myState = new object[2];
+			myState[0] = baseState;
+			myState[1] = dojoSeminarReservationID;
+			return myState;
+		}
+	}
+}
+

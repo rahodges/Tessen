@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dbModel version="1.11">
+  <Name>Tessen</Name>
+  <DefaultNamespace>Amns.GreyFox.Tessen</DefaultNamespace>
+  <Description>Tessen</Description>
+  <ConnectionString />
+  <ConnectionStringIsCoded>False</ConnectionStringIsCoded>
+  <ConnectionStringIsConfigKey>False</ConnectionStringIsConfigKey>
+  <VersionMajor>0</VersionMajor>
+  <VersionMinor>0</VersionMinor>
+  <VersionBuild>0</VersionBuild>
+  <References>
+    <ReferenceEntry>
+      <FileName>C:\Documents and Settings\manji\My Documents\Visual Studio Projects\Amns.GreyFox\GreyFox.DbModel</FileName>
+    </ReferenceEntry>
+  </References>
+  <FieldDataTypes>
+    <FieldDataType Name="bool" ProgramType="bool">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Boolean</DotNetDbType>
+      <DbType>BIT</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetBoolean({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>CheckBox</TypeEditorClass>
+      <TypeEditorPrefix>cb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Checked = {1};</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = {1}.Checked;</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="byte" ProgramType="byte">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.UnsignedTinyInt</DotNetDbType>
+      <DbType>BYTE</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetByte({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = byte.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="char" ProgramType="char">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Char</DotNetDbType>
+      <DbType>TEXT(1)</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>True</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetChar({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = char.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="DateTime" ProgramType="DateTime">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Date</DotNetDbType>
+      <DbType>DATETIME</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetDateTime({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = DateTime.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="DateTime (DateEditor)" ProgramType="DateTime">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Date</DotNetDbType>
+      <DbType>DATETIME</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetDateTime({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>Amns.GreyFox.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>DateEditor</TypeEditorClass>
+      <TypeEditorPrefix>de</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Date = {1};</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = {1}.Date;</TypeEditorGetValueFormat>
+      <TypeEditorProperties>de{0}.ID = this.ID + "_{0}";
+de{0}.AutoAdjust = true;</TypeEditorProperties>
+    </FieldDataType>
+    <FieldDataType Name="decimal" ProgramType="decimal">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Currency</DotNetDbType>
+      <DbType>CURRENCY</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetDecimal({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = decimal.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="double" ProgramType="double">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Double</DotNetDbType>
+      <DbType>DOUBLE</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetDouble({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = double.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="float" ProgramType="float">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Single</DotNetDbType>
+      <DbType>SINGLE</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetFloat({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = float.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties>tb{0}.ID = this.ID + "_{0}";</TypeEditorProperties>
+    </FieldDataType>
+    <FieldDataType Name="Guid" ProgramType="Guid">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Guid</DotNetDbType>
+      <DbType>GUID</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetGuid({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = new Guid({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties>tb{0}.ID = this.ID + "_{0}";</TypeEditorProperties>
+    </FieldDataType>
+    <FieldDataType Name="int" ProgramType="int">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Integer</DotNetDbType>
+      <DbType>LONG</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetInt32({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = int.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties>tb{0}.ID = this.ID + "_{0}";</TypeEditorProperties>
+    </FieldDataType>
+    <FieldDataType Name="short" ProgramType="short">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.SmallInt</DotNetDbType>
+      <DbType>SHORT</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetInt16({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = short.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="string" ProgramType="string">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.VarChar</DotNetDbType>
+      <DbType>TEXT({0})</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>True</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>True</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetString({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1};</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = {1}.Text;</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="string (MEMO)" ProgramType="string">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.VarChar</DotNetDbType>
+      <DbType>MEMO</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>True</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetString({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1};</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = {1}.Text;</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+    <FieldDataType Name="string (MEMO) - FCKeditor" ProgramType="string">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.VarChar</DotNetDbType>
+      <DbType>MEMO</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>True</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetString({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>FredCK</TypeEditorNamespace>
+      <TypeEditorClass>FCKeditor</TypeEditorClass>
+      <TypeEditorPrefix>fcke</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Value = {1};</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = {1}.Value;</TypeEditorGetValueFormat>
+      <TypeEditorProperties>fcke{0}.ID = this.ID + "_{0}";
+fcke{0}.Width = Unit.Percentage(100);</TypeEditorProperties>
+    </FieldDataType>
+    <FieldDataType Name="string (MEMO) - FTB" ProgramType="string">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.VarChar</DotNetDbType>
+      <DbType>MEMO</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>True</AdhocQuotesEnabled>
+      <DataReaderFormat>{0}.GetString({1})</DataReaderFormat>
+      <DataWriterFormat>{0}</DataWriterFormat>
+      <TypeEditorNamespace>FreeTextBoxControls</TypeEditorNamespace>
+      <TypeEditorClass>FreeTextBox</TypeEditorClass>
+      <TypeEditorPrefix>ftb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1};</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = {1}.Text;</TypeEditorGetValueFormat>
+      <TypeEditorProperties>ftb{0}.ID = this.ID + "_{0}";
+ftb{0}.Width = Unit.Percentage(100);</TypeEditorProperties>
+    </FieldDataType>
+    <FieldDataType Name="TimeSpan" ProgramType="TimeSpan">
+      <IsClass>False</IsClass>
+      <DotNetDbType>OleDbType.Double</DotNetDbType>
+      <DbType>DOUBLE</DbType>
+      <DefaultValue />
+      <DefaultValueFormat />
+      <LengthEnabled>False</LengthEnabled>
+      <ByteBufferEnabled>False</ByteBufferEnabled>
+      <AdhocQuotesEnabled>False</AdhocQuotesEnabled>
+      <DataReaderFormat>TimeSpan.FromTicks((long) {0}.GetDouble({1}))</DataReaderFormat>
+      <DataWriterFormat>{0}.Ticks</DataWriterFormat>
+      <TypeEditorNamespace>System.Web.UI.WebControls</TypeEditorNamespace>
+      <TypeEditorClass>TextBox</TypeEditorClass>
+      <TypeEditorPrefix>tb</TypeEditorPrefix>
+      <TypeEditorSetValueFormat>{0}.Text = {1}.ToString();</TypeEditorSetValueFormat>
+      <TypeEditorGetValueFormat>{0} = TimeSpan.Parse({1}.Text);</TypeEditorGetValueFormat>
+      <TypeEditorProperties />
+    </FieldDataType>
+  </FieldDataTypes>
+  <ChildDataTypes />
+  <ClassObjects />
+</dbModel>

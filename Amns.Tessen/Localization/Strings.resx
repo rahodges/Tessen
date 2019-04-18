@@ -1,0 +1,424 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ActiveMembership" xml:space="preserve">
+    <value>Active Membership</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ClassUnit_Plural" xml:space="preserve">
+    <value>classes</value>
+  </data>
+  <data name="ClassUnit_Singular" xml:space="preserve">
+    <value>class</value>
+  </data>
+  <data name="DayUnit_Plural" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="DayUnit_Singular" xml:space="preserve">
+    <value>day</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="FullEarlyRegistration" xml:space="preserve">
+    <value>Full Early Registration</value>
+  </data>
+  <data name="FullLateRegistration" xml:space="preserve">
+    <value>Full Late Registration</value>
+  </data>
+  <data name="FullRegistration" xml:space="preserve">
+    <value>Full Registration</value>
+  </data>
+  <data name="MembershipTab" xml:space="preserve">
+    <value>Membership</value>
+  </data>
+  <data name="MembershipTemplates_None" xml:space="preserve">
+    <value>Sorry, there are no available memberships available at this time.</value>
+    <comment>{0} Member Full Name</comment>
+  </data>
+  <data name="MembershipTemplates_Title" xml:space="preserve">
+    <value>Memberships</value>
+  </data>
+  <data name="MemberSince" xml:space="preserve">
+    <value>Member Since</value>
+  </data>
+  <data name="MemberType" xml:space="preserve">
+    <value>Member Type</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SemDescOrderLine_Date" xml:space="preserve">
+    <value>{0:f}</value>
+    <comment>Registration Date {0}</comment>
+  </data>
+  <data name="SemDescOrderLine_Fee" xml:space="preserve">
+    <value>{0}</value>
+    <comment>Kind of Fee {0}</comment>
+  </data>
+  <data name="SemDescOrderLine_For" xml:space="preserve">
+    <value>for {0}</value>
+    <comment>Contact Name {0}</comment>
+  </data>
+  <data name="SemDescOrderLine_Head" xml:space="preserve">
+    <value>{0}</value>
+    <comment>Seminar Name {0}, Registration Date {1}</comment>
+  </data>
+  <data name="SemDescOrderLine_Option" xml:space="preserve">
+    <value>{0} (Registration Option)</value>
+    <comment>Option Name {0}, Option Units {1}, Option Rate {2}, Option Fee {3}, Seminar {4}</comment>
+  </data>
+  <data name="SemDescOrderLine_Reg" xml:space="preserve">
+    <value>{0} - {1}</value>
+    <comment>Registration Dates</comment>
+  </data>
+  <data name="SemDescOrderLine_Units" xml:space="preserve">
+    <value>{0} {1} at {2:c} per {3}</value>
+    <comment>Unit Amount {0}, Unit Name {1}, Unit Fee {2}, Unit {3}</comment>
+  </data>
+  <data name="SeminarDoesNotExist" xml:space="preserve">
+    <value>The requested seminar does not exist.</value>
+  </data>
+  <data name="SeminarRegistrationDisabled" xml:space="preserve">
+    <value>{0} is not accepting registrations.</value>
+    <comment>Seminar name {0}</comment>
+  </data>
+  <data name="SeminarRegistrationLocked" xml:space="preserve">
+    <value>The requested registration is locked; the session has changed or a payment has been accepted.</value>
+  </data>
+  <data name="MembershipBuilder_CannotFindMember" xml:space="preserve">
+    <value>Cannot find the member provided in the build trees; be sure the build trees are loaded.</value>
+  </data>
+  <data name="Memberships" xml:space="preserve">
+    <value>Memberships</value>
+  </data>
+  <data name="Memberships_Empty" xml:space="preserve">
+    <value>No memberships are available for {0} at this time.</value>
+    <comment>Member Name {0}</comment>
+  </data>
+  <data name="MembershipTemplates_DateFormat" xml:space="preserve">
+    <value>{0:d} - {1:d}</value>
+    <comment>StartDate, EndDate</comment>
+  </data>
+  <data name="AllowAutoRenewal" xml:space="preserve">
+    <value>Allow Auto Renewals</value>
+  </data>
+  <data name="AllowGuestPurchase" xml:space="preserve">
+    <value>Allow Guest Purchase</value>
+  </data>
+  <data name="AllowMemberPurchase" xml:space="preserve">
+    <value>Allow Member Purchase</value>
+  </data>
+  <data name="AllowMemberRenewal" xml:space="preserve">
+    <value>Allow Member Renewal</value>
+  </data>
+  <data name="EditPrefix" xml:space="preserve">
+    <value>Edit - </value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="InitialEmailBody" xml:space="preserve">
+    <value>Welcome Email Body</value>
+  </data>
+  <data name="InitialEmailFrom" xml:space="preserve">
+    <value>Welcome Email From</value>
+  </data>
+  <data name="InitialRank" xml:space="preserve">
+    <value>Initial Rank</value>
+  </data>
+  <data name="InitialRankNote" xml:space="preserve">
+    <value>The initial rank will specify which rank a new member will start at with this membership.</value>
+  </data>
+  <data name="InitialRole" xml:space="preserve">
+    <value>Initial Role</value>
+  </data>
+  <data name="InitialRoleNote" xml:space="preserve">
+    <value>The initial role is an optional role to grant a new member with this membership.</value>
+  </data>
+  <data name="MaximumAge" xml:space="preserve">
+    <value>Maximum Age</value>
+  </data>
+  <data name="MaximumMemberFor" xml:space="preserve">
+    <value>Maximum Membership</value>
+  </data>
+  <data name="MaximumRank" xml:space="preserve">
+    <value>Maximum Rank</value>
+  </data>
+  <data name="MembershipTemplate1" xml:space="preserve">
+    <value>Membership Template 1</value>
+  </data>
+  <data name="MembershipTemplate2" xml:space="preserve">
+    <value>Membership Template 2</value>
+  </data>
+  <data name="MembershipTemplate3" xml:space="preserve">
+    <value>Membership Template 3</value>
+  </data>
+  <data name="MembershipTemplate4" xml:space="preserve">
+    <value>Membership Template 4</value>
+  </data>
+  <data name="MembershipTemplate5" xml:space="preserve">
+    <value>Membership Template 5</value>
+  </data>
+  <data name="MinimumAge" xml:space="preserve">
+    <value>Minimum Age</value>
+  </data>
+  <data name="MinimumMemberFor" xml:space="preserve">
+    <value>Minimum Membership</value>
+  </data>
+  <data name="MinimumRank" xml:space="preserve">
+    <value>Minimum Rank</value>
+  </data>
+  <data name="NewMembers" xml:space="preserve">
+    <value>New Members</value>
+  </data>
+  <data name="OrderNum" xml:space="preserve">
+    <value>Order #</value>
+  </data>
+  <data name="ParentTemplate" xml:space="preserve">
+    <value>Parent Template</value>
+  </data>
+  <data name="Requirements" xml:space="preserve">
+    <value>Requirements</value>
+  </data>
+  <data name="Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Templates" xml:space="preserve">
+    <value>Templates</value>
+  </data>
+  <data name="TreeHash" xml:space="preserve">
+    <value>Template Code</value>
+  </data>
+  <data name="Years" xml:space="preserve">
+    <value> years.</value>
+  </data>
+  <data name="YearsOld" xml:space="preserve">
+    <value> years old.</value>
+  </data>
+  <data name="IllegalValue" xml:space="preserve">
+    <value>Illegal value.</value>
+  </data>
+  <data name="PrimaryMemberType" xml:space="preserve">
+    <value>Primary Member Type</value>
+  </data>
+  <data name="PrimaryMemberTypeNote" xml:space="preserve">
+    <value>This is the member type for the primary member on this template. Only members that have this type will be able to access the template. In addition the Primary Member is primarily responsible for payments. Subtemplates can be used to add more member types.</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required.</value>
+  </data>
+  <data name="HashCompileReady" xml:space="preserve">
+    <value>The hash compiler is ready.</value>
+  </data>
+  <data name="HashCompileWarning" xml:space="preserve">
+    <value>Warning! Hashes are currently compiling {0} of {1} items. Please wait.</value>
+  </data>
+  <data name="ProrateMembershipSuffix" xml:space="preserve">
+    <value>(Prorate)</value>
+  </data>
+  <data name="StartupMembershipSuffix" xml:space="preserve">
+    <value>+ Signup</value>
+  </data>
+  <data name="LastSignin" xml:space="preserve">
+    <value>Last Signin</value>
+  </data>
+  <data name="MembershipDates" xml:space="preserve">
+    <value>{0:d} - {1:d}</value>
+  </data>
+  <data name="MembershipsAvailable" xml:space="preserve">
+    <value>Available Memberships</value>
+  </data>
+  <data name="MembershipsCurrent" xml:space="preserve">
+    <value>Current Memberships</value>
+  </data>
+  <data name="NinetyDayInstructors" xml:space="preserve">
+    <value>Ninety Day Instructors</value>
+  </data>
+  <data name="NoMemberships" xml:space="preserve">
+    <value>No Memberships</value>
+  </data>
+  <data name="NoMembershipsFriendly" xml:space="preserve">
+    <value>There are currently no memberships available in this package. Your memberships may already be up to date.</value>
+  </data>
+  <data name="NoRankSpecified" xml:space="preserve">
+    <value>No Rank Specified</value>
+  </data>
+  <data name="ProrateMembershipAbbreviation" xml:space="preserve">
+    <value>p</value>
+  </data>
+  <data name="StartupMembership" xml:space="preserve">
+    <value>Signup</value>
+  </data>
+  <data name="StartupMembershipAbbreviation" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="TimeInMembership" xml:space="preserve">
+    <value>Time in Membership</value>
+  </data>
+  <data name="TimeInMembershipFormat" xml:space="preserve">
+    <value>{0:f} hrs.</value>
+  </data>
+  <data name="TimeInRank" xml:space="preserve">
+    <value>Time in Rank</value>
+  </data>
+  <data name="TimeInRankFormat" xml:space="preserve">
+    <value>{0:f} hrs.</value>
+  </data>
+  <data name="PrimaryAccountTab" xml:space="preserve">
+    <value>Primary Acct.</value>
+  </data>
+  <data name="UserAccountInUse" xml:space="preserve">
+    <value>User account in use.</value>
+  </data>
+  <data name="UserAccountNotice" xml:space="preserve">
+    <value>Please enter a username not currently used by another memberr, this can be an existing user or enter a username to create.</value>
+  </data>
+  <data name="MemberSinceFormat" xml:space="preserve">
+    <value>{0:d} ({1:f} hrs.)</value>
+    <comment>Member Since {0}, Time in Membership {1}</comment>
+  </data>
+  <data name="ParentMember" xml:space="preserve">
+    <value>Parent Member</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="RankFormat" xml:space="preserve">
+    <value>{0} ({1:f} hrs.)</value>
+    <comment>Rank Name {0}, Time in Rank {1}</comment>
+  </data>
+  <data name="RootMember" xml:space="preserve">
+    <value>Root Member</value>
+  </data>
+</root>

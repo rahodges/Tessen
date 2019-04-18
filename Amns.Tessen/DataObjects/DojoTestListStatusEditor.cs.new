@@ -1,0 +1,531 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// Default web editor for DojoTestListStatus.
+	/// </summary>
+	[ToolboxData("<{0}:DojoTestListStatusEditor runat=server></{0}:DojoTestListStatusEditor>")]
+	public class DojoTestListStatusEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+	{
+		private int dojoTestListStatusID;
+		private DojoTestListStatus obj;
+		private bool loadFlag = false;
+		private bool resetOnAdd;
+		private bool editOnAdd;
+
+		protected ComponentArt.Web.UI.TabStrip tabstrip;
+		protected ComponentArt.Web.UI.MultiPage multipage;
+		protected Literal headerText;
+
+		#region Private Control Fields for _system Folder
+
+		protected ComponentArt.Web.UI.PageView _systemView;
+
+		#endregion
+
+		#region Private Control Fields for General Folder
+
+		protected ComponentArt.Web.UI.PageView GeneralView;
+		private TextBox tbName;
+		private TextBox tbDescription;
+		private TextBox tbOrderNum;
+		private RegularExpressionValidator revOrderNum;
+
+		#endregion
+
+		#region Private Control Fields for Flags Folder
+
+		protected ComponentArt.Web.UI.PageView FlagsView;
+		private CheckBox cbIsDraft;
+		private CheckBox cbIsFinal;
+		private CheckBox cbIsComplete;
+		private CheckBox cbTeacherEditingEnabled;
+
+		#endregion
+
+		#region Private Control Fields for Status_Changes Folder
+
+		protected ComponentArt.Web.UI.PageView Status_ChangesView;
+		private ComponentArt.Web.UI.ComboBox comboOnFinalized;
+		private ComponentArt.Web.UI.ComboBox comboOnCompleted;
+
+		#endregion
+
+		private Button btOk;
+		private Button btCancel;
+		private Button btDelete;
+
+		#region Public Control Properties
+
+		[Bindable(true), Category("Data"), DefaultValue(0)]
+		public int DojoTestListStatusID
+		{
+			get
+			{
+				return dojoTestListStatusID;
+			}
+			set
+			{
+				loadFlag = true;
+				dojoTestListStatusID = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool EditOnAdd
+		{
+			get
+			{
+				return editOnAdd;
+			}
+			set
+			{
+				editOnAdd = value;
+			}
+		}
+
+		#endregion
+
+		protected override void CreateChildControls()
+		{
+			Panel container = new Panel();
+			container.CssClass = this.CssClass;
+			Controls.Add(container);
+			Panel header = new Panel();
+			header.CssClass = "pHead";
+			container.Controls.Add(header);
+			headerText = new Literal();
+			header.Controls.Add(headerText);
+			Panel content = new Panel();
+			content.CssClass = "pContent";
+			container.Controls.Add(content);
+			#region Tab Strip
+
+			tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+			// Create the DefaultTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+			defaultTabLook.LookId = "DefaultTabLook";
+			defaultTabLook.CssClass = "DefaultTab";
+			defaultTabLook.HoverCssClass = "DefaultTabHover";
+			defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+			defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+			defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+			defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+			defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+			defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+			defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+			defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+			defaultTabLook.LeftIconWidth = Unit.Parse("3");
+			defaultTabLook.LeftIconHeight = Unit.Parse("21");
+			defaultTabLook.RightIconWidth = Unit.Parse("3");
+			defaultTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(defaultTabLook);
+
+			// Create the SelectedTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+			selectedTabLook.LookId = "SelectedTabLook";
+			selectedTabLook.CssClass = "SelectedTab";
+			selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+			selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+			selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+			selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+			selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+			selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+			selectedTabLook.LeftIconWidth = Unit.Parse("3");
+			selectedTabLook.LeftIconHeight = Unit.Parse("21");
+			selectedTabLook.RightIconWidth = Unit.Parse("3");
+			selectedTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(selectedTabLook);
+
+			tabstrip.ID = this.ID + "_TabStrip";
+			tabstrip.CssClass = "TopGroup";
+			tabstrip.DefaultItemLookId = "DefaultTabLook";
+			tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+			tabstrip.DefaultGroupTabSpacing = 1;
+			tabstrip.ImagesBaseUrl = "tabstrip_images/";
+			tabstrip.MultiPageId = this.ID + "_MultiPage";
+			content.Controls.Add(tabstrip);
+
+			#endregion
+
+			#region MultiPage
+
+			multipage = new ComponentArt.Web.UI.MultiPage();
+			multipage.ID = this.ID + "_MultiPage";
+			multipage.CssClass = "MultiPage";
+			content.Controls.Add(multipage);
+
+			#endregion
+
+			#region Child Controls for General Folder
+
+			GeneralView = new ComponentArt.Web.UI.PageView();
+			GeneralView.CssClass = "PageContent";
+			multipage.PageViews.Add(GeneralView);
+
+			TabStripTab GeneralTab = new TabStripTab();
+			GeneralTab.Text = "General";
+			GeneralTab.PageViewId = GeneralView.ID;
+			tabstrip.Tabs.Add(GeneralTab);
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Name</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbName = new TextBox();
+			tbName.EnableViewState = false;
+			GeneralView.Controls.Add(tbName);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Description</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbDescription = new TextBox();
+			tbDescription.EnableViewState = false;
+			GeneralView.Controls.Add(tbDescription);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OrderNum</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbOrderNum = new TextBox();
+			tbOrderNum.ID = this.ID + "_OrderNum";
+			tbOrderNum.EnableViewState = false;
+			GeneralView.Controls.Add(tbOrderNum);
+			revOrderNum = new RegularExpressionValidator();
+			revOrderNum.ControlToValidate = tbOrderNum.ID;
+			revOrderNum.ValidationExpression = "^(\\+|-)?\\d+$";
+			revOrderNum.ErrorMessage = "*";
+			revOrderNum.Display = ValidatorDisplay.Dynamic;
+			revOrderNum.EnableViewState = false;
+			GeneralView.Controls.Add(revOrderNum);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Flags Folder
+
+			FlagsView = new ComponentArt.Web.UI.PageView();
+			FlagsView.CssClass = "PageContent";
+			multipage.PageViews.Add(FlagsView);
+
+			TabStripTab FlagsTab = new TabStripTab();
+			FlagsTab.Text = "Flags";
+			FlagsTab.PageViewId = FlagsView.ID;
+			tabstrip.Tabs.Add(FlagsTab);
+
+			FlagsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">IsDraft</span>"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsDraft = new CheckBox();
+			cbIsDraft.EnableViewState = false;
+			FlagsView.Controls.Add(cbIsDraft);
+			FlagsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			FlagsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">IsFinal</span>"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsFinal = new CheckBox();
+			cbIsFinal.EnableViewState = false;
+			FlagsView.Controls.Add(cbIsFinal);
+			FlagsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			FlagsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">IsComplete</span>"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsComplete = new CheckBox();
+			cbIsComplete.EnableViewState = false;
+			FlagsView.Controls.Add(cbIsComplete);
+			FlagsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			FlagsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">TeacherEditingEnabled</span>"));
+			FlagsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbTeacherEditingEnabled = new CheckBox();
+			cbTeacherEditingEnabled.EnableViewState = false;
+			FlagsView.Controls.Add(cbTeacherEditingEnabled);
+			FlagsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Status Changes Folder
+
+			Status_ChangesView = new ComponentArt.Web.UI.PageView();
+			Status_ChangesView.CssClass = "PageContent";
+			multipage.PageViews.Add(Status_ChangesView);
+
+			TabStripTab Status_ChangesTab = new TabStripTab();
+			Status_ChangesTab.Text = "Status Changes";
+			Status_ChangesTab.PageViewId = Status_ChangesView.ID;
+			tabstrip.Tabs.Add(Status_ChangesTab);
+
+			Status_ChangesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			Status_ChangesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OnFinalized</span>"));
+			Status_ChangesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboOnFinalized = new ComponentArt.Web.UI.ComboBox();
+			comboOnFinalized.CssClass = "comboBox";
+			comboOnFinalized.HoverCssClass = "comboBoxHover";
+			comboOnFinalized.FocusedCssClass = "comboBoxHover";
+			comboOnFinalized.TextBoxCssClass = "comboTextBox";
+			comboOnFinalized.DropDownCssClass = "comboDropDown";
+			comboOnFinalized.ItemCssClass = "comboItem";
+			comboOnFinalized.ItemHoverCssClass = "comboItemHover";
+			comboOnFinalized.SelectedItemCssClass = "comboItemHover";
+			comboOnFinalized.DropHoverImageUrl = "images/drop_hover.gif";
+			comboOnFinalized.DropImageUrl = "images/drop.gif";
+			comboOnFinalized.Width = Unit.Pixel(300);
+			Status_ChangesView.Controls.Add(comboOnFinalized);
+			Status_ChangesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			Status_ChangesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			Status_ChangesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OnCompleted</span>"));
+			Status_ChangesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboOnCompleted = new ComponentArt.Web.UI.ComboBox();
+			comboOnCompleted.CssClass = "comboBox";
+			comboOnCompleted.HoverCssClass = "comboBoxHover";
+			comboOnCompleted.FocusedCssClass = "comboBoxHover";
+			comboOnCompleted.TextBoxCssClass = "comboTextBox";
+			comboOnCompleted.DropDownCssClass = "comboDropDown";
+			comboOnCompleted.ItemCssClass = "comboItem";
+			comboOnCompleted.ItemHoverCssClass = "comboItemHover";
+			comboOnCompleted.SelectedItemCssClass = "comboItemHover";
+			comboOnCompleted.DropHoverImageUrl = "images/drop_hover.gif";
+			comboOnCompleted.DropImageUrl = "images/drop.gif";
+			comboOnCompleted.Width = Unit.Pixel(300);
+			Status_ChangesView.Controls.Add(comboOnCompleted);
+			Status_ChangesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			Panel buttons = new Panel();
+			buttons.CssClass = "pButtons";
+			content.Controls.Add(buttons);
+
+			btOk = new Button();
+			btOk.Text = "OK";
+			btOk.Width = Unit.Pixel(72);
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			buttons.Controls.Add(btOk);
+
+			btCancel = new Button();
+			btCancel.Text = "Cancel";
+			btCancel.Width = Unit.Pixel(72);
+			btCancel.EnableViewState = false;
+			btCancel.CausesValidation = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			buttons.Controls.Add(btCancel);
+
+			btDelete = new Button();
+			btDelete.Text = "Delete";
+			btDelete.Width = Unit.Pixel(72);
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			buttons.Controls.Add(btDelete);
+
+			bind();
+			ChildControlsCreated = true;
+		}
+
+		private void bind()
+		{
+			#region Bind Status Changes Child Data
+
+			DojoTestListStatusManager onFinalizedManager = new DojoTestListStatusManager();
+			DojoTestListStatusCollection onFinalizedCollection = onFinalizedManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem OnFinalizedNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			OnFinalizedNullItem.Text = "Null";
+			OnFinalizedNullItem.Value = "Null";
+			comboOnFinalized.Items.Add(OnFinalizedNullItem);
+			foreach(DojoTestListStatus onFinalized in onFinalizedCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = onFinalized.ToString();
+				i.Value = onFinalized.ID.ToString();
+				comboOnFinalized.Items.Add(i);
+			}
+
+			DojoTestListStatusManager onCompletedManager = new DojoTestListStatusManager();
+			DojoTestListStatusCollection onCompletedCollection = onCompletedManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem OnCompletedNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			OnCompletedNullItem.Text = "Null";
+			OnCompletedNullItem.Value = "Null";
+			comboOnCompleted.Items.Add(OnCompletedNullItem);
+			foreach(DojoTestListStatus onCompleted in onCompletedCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = onCompleted.ToString();
+				i.Value = onCompleted.ID.ToString();
+				comboOnCompleted.Items.Add(i);
+			}
+
+			#endregion
+
+		}
+
+		#region Events
+
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(dojoTestListStatusID == 0)
+				obj = new DojoTestListStatus();
+			else
+				obj = new DojoTestListStatus(dojoTestListStatusID);
+
+			obj.Name = tbName.Text;
+			obj.Description = tbDescription.Text;
+			obj.OrderNum = int.Parse(tbOrderNum.Text);
+			obj.IsDraft = cbIsDraft.Checked;
+			obj.IsFinal = cbIsFinal.Checked;
+			obj.IsComplete = cbIsComplete.Checked;
+			obj.TeacherEditingEnabled = cbTeacherEditingEnabled.Checked;
+			if(comboOnFinalized.SelectedItem != null && comboOnFinalized.SelectedItem.Value != "Null")
+				obj.OnFinalized = DojoTestListStatus.NewPlaceHolder(
+					int.Parse(comboOnFinalized.SelectedItem.Value));
+			else
+				obj.OnFinalized = null;
+
+			if(comboOnCompleted.SelectedItem != null && comboOnCompleted.SelectedItem.Value != "Null")
+				obj.OnCompleted = DojoTestListStatus.NewPlaceHolder(
+					int.Parse(comboOnCompleted.SelectedItem.Value));
+			else
+				obj.OnCompleted = null;
+
+			if(editOnAdd)
+				dojoTestListStatusID = obj.Save();
+			else
+				obj.Save();
+
+			if(resetOnAdd)
+			{
+				tbName.Text = string.Empty;
+				tbDescription.Text = string.Empty;
+				tbOrderNum.Text = string.Empty;
+				cbIsDraft.Checked = false;
+				cbIsFinal.Checked = false;
+				cbIsComplete.Checked = false;
+				cbTeacherEditingEnabled.Checked = false;
+				msOnFinalized.SelectedIndex = 0;
+				msOnCompleted.SelectedIndex = 0;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+			DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnPreRender(EventArgs e)
+		{
+			if(loadFlag)
+			{
+				if(dojoTestListStatusID > 0)
+				{
+					obj = new DojoTestListStatus(dojoTestListStatusID);
+					headerText.Text = "Edit  - " + obj.ToString();
+				}
+				else if(dojoTestListStatusID <= 0)
+				{
+					obj = new DojoTestListStatus();
+					headerText.Text = "Add ";
+				}
+
+				// Bind General Data
+				tbName.Text = obj.Name;
+				tbDescription.Text = obj.Description;
+				tbOrderNum.Text = obj.OrderNum.ToString();
+
+				// Bind Flags Data
+				cbIsDraft.Checked = obj.IsDraft;
+				cbIsFinal.Checked = obj.IsFinal;
+				cbIsComplete.Checked = obj.IsComplete;
+				cbTeacherEditingEnabled.Checked = obj.TeacherEditingEnabled;
+
+				// Bind Status Changes Data
+				if(obj.OnFinalized != null)
+					foreach(ListItem item in comboOnFinalized.Items)
+						item.Selected = obj.OnFinalized.ID.ToString() == item.Value;
+					else
+						msOnFinalized.SelectedIndex = 0;
+				if(obj.OnCompleted != null)
+					foreach(ListItem item in comboOnCompleted.Items)
+						item.Selected = obj.OnCompleted.ID.ToString() == item.Value;
+					else
+						msOnCompleted.SelectedIndex = 0;
+				tabstrip.SelectedTab = tabstrip.Tabs[0];
+			}
+		}
+
+		protected override void LoadViewState(object savedState)
+		{
+			if(savedState != null)
+			{
+				object[] myState = (object[]) savedState;
+				if(myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if(myState[1] != null)
+					dojoTestListStatusID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{
+			object baseState = base.SaveViewState();
+			object[] myState = new object[2];
+			myState[0] = baseState;
+			myState[1] = dojoTestListStatusID;
+			return myState;
+		}
+	}
+}
+

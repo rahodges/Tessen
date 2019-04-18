@@ -1,0 +1,733 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using FreeTextBoxControls;
+using Amns.GreyFox.People;
+using Amns.Rappahanock;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// Default web editor for DojoSeminar.
+	/// </summary>
+	[ToolboxData("<{0}:DojoSeminarEditor runat=server></{0}:DojoSeminarEditor>")]
+	public class DojoSeminarEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+	{
+		private int dojoSeminarID;
+		private DojoSeminar obj;
+		private bool loadFlag = false;
+		private bool resetOnAdd;
+		private bool editOnAdd;
+
+		protected ComponentArt.Web.UI.TabStrip tabstrip;
+		protected ComponentArt.Web.UI.MultiPage multipage;
+		protected Literal headerText;
+
+		#region Private Control Fields for General Folder
+
+		protected ComponentArt.Web.UI.PageView GeneralView;
+		private TextBox tbName;
+		private TextBox tbStartDate;
+		private TextBox tbEndDate;
+		private TextBox tbDescription;
+		private CheckBox cbIsLocal;
+		private ComponentArt.Web.UI.ComboBox comboLocation;
+
+		#endregion
+
+		#region Private Control Fields for _system Folder
+
+		protected ComponentArt.Web.UI.PageView _systemView;
+
+		#endregion
+
+		#region Private Control Fields for Registration Folder
+
+		protected ComponentArt.Web.UI.PageView RegistrationView;
+		private TextBox tbClassUnitType;
+		private TextBox tbClassUnitFee;
+		private TextBox tbBaseRegistrationFee;
+		private CheckBox cbRegistrationEnabled;
+		private TextBox tbRegistrationStart;
+		private TextBox tbFullEarlyRegistrationFee;
+		private TextBox tbEarlyEndDate;
+		private TextBox tbFullRegistrationFee;
+		private TextBox tbLateStartDate;
+		private TextBox tbFullLateRegistrationFee;
+		private TextBox tbRegistrationEnd;
+		private MultiSelectBox msOptions;
+
+		#endregion
+
+		#region Private Control Fields for Details Folder
+
+		protected ComponentArt.Web.UI.PageView DetailsView;
+		private FreeTextBox ftbDetails;
+		private TextBox tbDetailsOverrideUrl;
+		private TextBox tbPdfUrl;
+
+		#endregion
+
+		#region Private Control Fields for Rappahanock Folder
+
+		protected ComponentArt.Web.UI.PageView RappahanockView;
+		private ComponentArt.Web.UI.ComboBox comboItem;
+
+		#endregion
+
+		private Button btOk;
+		private Button btCancel;
+		private Button btDelete;
+
+		#region Public Control Properties
+
+		[Bindable(true), Category("Data"), DefaultValue(0)]
+		public int DojoSeminarID
+		{
+			get
+			{
+				return dojoSeminarID;
+			}
+			set
+			{
+				loadFlag = true;
+				dojoSeminarID = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool EditOnAdd
+		{
+			get
+			{
+				return editOnAdd;
+			}
+			set
+			{
+				editOnAdd = value;
+			}
+		}
+
+		#endregion
+
+		protected override void CreateChildControls()
+		{
+			Panel container = new Panel();
+			container.CssClass = this.CssClass;
+			Controls.Add(container);
+			Panel header = new Panel();
+			header.CssClass = "pHead";
+			container.Controls.Add(header);
+			headerText = new Literal();
+			header.Controls.Add(headerText);
+			Panel content = new Panel();
+			content.CssClass = "pContent";
+			container.Controls.Add(content);
+			#region Tab Strip
+
+			tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+			// Create the DefaultTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+			defaultTabLook.LookId = "DefaultTabLook";
+			defaultTabLook.CssClass = "DefaultTab";
+			defaultTabLook.HoverCssClass = "DefaultTabHover";
+			defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+			defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+			defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+			defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+			defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+			defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+			defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+			defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+			defaultTabLook.LeftIconWidth = Unit.Parse("3");
+			defaultTabLook.LeftIconHeight = Unit.Parse("21");
+			defaultTabLook.RightIconWidth = Unit.Parse("3");
+			defaultTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(defaultTabLook);
+
+			// Create the SelectedTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+			selectedTabLook.LookId = "SelectedTabLook";
+			selectedTabLook.CssClass = "SelectedTab";
+			selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+			selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+			selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+			selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+			selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+			selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+			selectedTabLook.LeftIconWidth = Unit.Parse("3");
+			selectedTabLook.LeftIconHeight = Unit.Parse("21");
+			selectedTabLook.RightIconWidth = Unit.Parse("3");
+			selectedTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(selectedTabLook);
+
+			tabstrip.ID = this.ID + "_TabStrip";
+			tabstrip.CssClass = "TopGroup";
+			tabstrip.DefaultItemLookId = "DefaultTabLook";
+			tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+			tabstrip.DefaultGroupTabSpacing = 1;
+			tabstrip.ImagesBaseUrl = "tabstrip_images/";
+			tabstrip.MultiPageId = this.ID + "_MultiPage";
+			content.Controls.Add(tabstrip);
+
+			#endregion
+
+			#region MultiPage
+
+			multipage = new ComponentArt.Web.UI.MultiPage();
+			multipage.ID = this.ID + "_MultiPage";
+			multipage.CssClass = "MultiPage";
+			content.Controls.Add(multipage);
+
+			#endregion
+
+			#region Child Controls for General Folder
+
+			GeneralView = new ComponentArt.Web.UI.PageView();
+			GeneralView.CssClass = "PageContent";
+			multipage.PageViews.Add(GeneralView);
+
+			TabStripTab GeneralTab = new TabStripTab();
+			GeneralTab.Text = "General";
+			GeneralTab.PageViewId = GeneralView.ID;
+			tabstrip.Tabs.Add(GeneralTab);
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Seminar name.</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbName = new TextBox();
+			tbName.EnableViewState = false;
+			GeneralView.Controls.Add(tbName);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">First date of seminar.</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbStartDate = new TextBox();
+			tbStartDate.EnableViewState = false;
+			GeneralView.Controls.Add(tbStartDate);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Last day of seminar.</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbEndDate = new TextBox();
+			tbEndDate.EnableViewState = false;
+			GeneralView.Controls.Add(tbEndDate);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Seminar description.</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbDescription = new TextBox();
+			tbDescription.EnableViewState = false;
+			GeneralView.Controls.Add(tbDescription);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">IsLocal</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsLocal = new CheckBox();
+			cbIsLocal.EnableViewState = false;
+			GeneralView.Controls.Add(cbIsLocal);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Location</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboLocation = new ComponentArt.Web.UI.ComboBox();
+			comboLocation.CssClass = "comboBox";
+			comboLocation.HoverCssClass = "comboBoxHover";
+			comboLocation.FocusedCssClass = "comboBoxHover";
+			comboLocation.TextBoxCssClass = "comboTextBox";
+			comboLocation.DropDownCssClass = "comboDropDown";
+			comboLocation.ItemCssClass = "comboItem";
+			comboLocation.ItemHoverCssClass = "comboItemHover";
+			comboLocation.SelectedItemCssClass = "comboItemHover";
+			comboLocation.DropHoverImageUrl = "images/drop_hover.gif";
+			comboLocation.DropImageUrl = "images/drop.gif";
+			comboLocation.Width = Unit.Pixel(300);
+			GeneralView.Controls.Add(comboLocation);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Registration Folder
+
+			RegistrationView = new ComponentArt.Web.UI.PageView();
+			RegistrationView.CssClass = "PageContent";
+			multipage.PageViews.Add(RegistrationView);
+
+			TabStripTab RegistrationTab = new TabStripTab();
+			RegistrationTab.Text = "Registration";
+			RegistrationTab.PageViewId = RegistrationView.ID;
+			tabstrip.Tabs.Add(RegistrationTab);
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ClassUnitType</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbClassUnitType = new TextBox();
+			tbClassUnitType.EnableViewState = false;
+			RegistrationView.Controls.Add(tbClassUnitType);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class unit fee.</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbClassUnitFee = new TextBox();
+			tbClassUnitFee.EnableViewState = false;
+			RegistrationView.Controls.Add(tbClassUnitFee);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Base registration fee</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbBaseRegistrationFee = new TextBox();
+			tbBaseRegistrationFee.EnableViewState = false;
+			RegistrationView.Controls.Add(tbBaseRegistrationFee);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Enable registration.</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbRegistrationEnabled = new CheckBox();
+			cbRegistrationEnabled.EnableViewState = false;
+			RegistrationView.Controls.Add(cbRegistrationEnabled);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Registration start.</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbRegistrationStart = new TextBox();
+			tbRegistrationStart.EnableViewState = false;
+			RegistrationView.Controls.Add(tbRegistrationStart);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">FullEarlyRegistrationFee</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbFullEarlyRegistrationFee = new TextBox();
+			tbFullEarlyRegistrationFee.EnableViewState = false;
+			RegistrationView.Controls.Add(tbFullEarlyRegistrationFee);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">EarlyEndDate</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbEarlyEndDate = new TextBox();
+			tbEarlyEndDate.EnableViewState = false;
+			RegistrationView.Controls.Add(tbEarlyEndDate);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Full registration fee</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbFullRegistrationFee = new TextBox();
+			tbFullRegistrationFee.EnableViewState = false;
+			RegistrationView.Controls.Add(tbFullRegistrationFee);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">LateStartDate</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbLateStartDate = new TextBox();
+			tbLateStartDate.EnableViewState = false;
+			RegistrationView.Controls.Add(tbLateStartDate);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">FullLateRegistrationFee</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbFullLateRegistrationFee = new TextBox();
+			tbFullLateRegistrationFee.EnableViewState = false;
+			RegistrationView.Controls.Add(tbFullLateRegistrationFee);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Registration end.</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbRegistrationEnd = new TextBox();
+			tbRegistrationEnd.EnableViewState = false;
+			RegistrationView.Controls.Add(tbRegistrationEnd);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			RegistrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Options</span>"));
+			RegistrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			msOptions = new MultiSelectBox();
+			msOptions.Mode = MultiSelectBoxMode.DualSelect;
+			RegistrationView.Controls.Add(msOptions);
+			RegistrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Details Folder
+
+			DetailsView = new ComponentArt.Web.UI.PageView();
+			DetailsView.CssClass = "PageContent";
+			multipage.PageViews.Add(DetailsView);
+
+			TabStripTab DetailsTab = new TabStripTab();
+			DetailsTab.Text = "Details";
+			DetailsTab.PageViewId = DetailsView.ID;
+			tabstrip.Tabs.Add(DetailsTab);
+
+			DetailsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DetailsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Details</span>"));
+			DetailsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			ftbDetails = new FreeTextBox();
+			ftbDetails.ID = this.ID + "_Details";
+			ftbDetails.Width = Unit.Percentage(100);
+			ftbDetails.EnableViewState = false;
+			DetailsView.Controls.Add(ftbDetails);
+			DetailsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DetailsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DetailsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Details Override URL</span>"));
+			DetailsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbDetailsOverrideUrl = new TextBox();
+			tbDetailsOverrideUrl.EnableViewState = false;
+			DetailsView.Controls.Add(tbDetailsOverrideUrl);
+			DetailsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DetailsView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DetailsView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PDF Link</span>"));
+			DetailsView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbPdfUrl = new TextBox();
+			tbPdfUrl.EnableViewState = false;
+			DetailsView.Controls.Add(tbPdfUrl);
+			DetailsView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Rappahanock Folder
+
+			RappahanockView = new ComponentArt.Web.UI.PageView();
+			RappahanockView.CssClass = "PageContent";
+			multipage.PageViews.Add(RappahanockView);
+
+			TabStripTab RappahanockTab = new TabStripTab();
+			RappahanockTab.Text = "Rappahanock";
+			RappahanockTab.PageViewId = RappahanockView.ID;
+			tabstrip.Tabs.Add(RappahanockTab);
+
+			RappahanockView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RappahanockView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Item</span>"));
+			RappahanockView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboItem = new ComponentArt.Web.UI.ComboBox();
+			comboItem.CssClass = "comboBox";
+			comboItem.HoverCssClass = "comboBoxHover";
+			comboItem.FocusedCssClass = "comboBoxHover";
+			comboItem.TextBoxCssClass = "comboTextBox";
+			comboItem.DropDownCssClass = "comboDropDown";
+			comboItem.ItemCssClass = "comboItem";
+			comboItem.ItemHoverCssClass = "comboItemHover";
+			comboItem.SelectedItemCssClass = "comboItemHover";
+			comboItem.DropHoverImageUrl = "images/drop_hover.gif";
+			comboItem.DropImageUrl = "images/drop.gif";
+			comboItem.Width = Unit.Pixel(300);
+			RappahanockView.Controls.Add(comboItem);
+			RappahanockView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			Panel buttons = new Panel();
+			buttons.CssClass = "pButtons";
+			content.Controls.Add(buttons);
+
+			btOk = new Button();
+			btOk.Text = "OK";
+			btOk.Width = Unit.Pixel(72);
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			buttons.Controls.Add(btOk);
+
+			btCancel = new Button();
+			btCancel.Text = "Cancel";
+			btCancel.Width = Unit.Pixel(72);
+			btCancel.EnableViewState = false;
+			btCancel.CausesValidation = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			buttons.Controls.Add(btCancel);
+
+			btDelete = new Button();
+			btDelete.Text = "Delete";
+			btDelete.Width = Unit.Pixel(72);
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			buttons.Controls.Add(btDelete);
+
+			bind();
+			ChildControlsCreated = true;
+		}
+
+		private void bind()
+		{
+			#region Bind General Child Data
+
+			GreyFoxContactManager locationManager = new GreyFoxContactManager("kitTessen_Locations");
+			GreyFoxContactCollection locationCollection = locationManager.GetCollection(string.Empty, string.Empty);
+			ComponentArt.Web.UI.ComboBoxItem LocationNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			LocationNullItem.Text = "Null";
+			LocationNullItem.Value = "Null";
+			comboLocation.Items.Add(LocationNullItem);
+			foreach(GreyFoxContact location in locationCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = location.ToString();
+				i.Value = location.ID.ToString();
+				comboLocation.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Registration Child Data
+
+			DojoSeminarOptionManager optionsManager = new DojoSeminarOptionManager();
+			DojoSeminarOptionCollection optionsCollection = optionsManager.GetCollection(string.Empty, string.Empty, null);
+			msOptions.Items.Add(new ListItem("Null", "Null"));
+			foreach(DojoSeminarOption options in optionsCollection)
+			{
+				ListItem i = new ListItem(options.ToString(), options.ID.ToString());
+				msOptions.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Rappahanock Child Data
+
+			RHItemManager itemManager = new RHItemManager();
+			RHItemCollection itemCollection = itemManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ItemNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ItemNullItem.Text = "Null";
+			ItemNullItem.Value = "Null";
+			comboItem.Items.Add(ItemNullItem);
+			foreach(RHItem item in itemCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = item.ToString();
+				i.Value = item.ID.ToString();
+				comboItem.Items.Add(i);
+			}
+
+			#endregion
+
+		}
+
+		#region Events
+
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(dojoSeminarID == 0)
+				obj = new DojoSeminar();
+			else
+				obj = new DojoSeminar(dojoSeminarID);
+
+			obj.Name = tbName.Text;
+			obj.StartDate = DateTime.Parse(tbStartDate.Text);
+			obj.EndDate = DateTime.Parse(tbEndDate.Text);
+			obj.Description = tbDescription.Text;
+			obj.IsLocal = cbIsLocal.Checked;
+			if(comboLocation.SelectedItem != null && comboLocation.SelectedItem.Value != "Null")
+				obj.Location = GreyFoxContact.NewPlaceHolder("kitTessen_Locations", 
+					int.Parse(comboLocation.SelectedItem.Value));
+			else
+				obj.Location = null;
+
+			obj.ClassUnitType = byte.Parse(tbClassUnitType.Text);
+			obj.ClassUnitFee = decimal.Parse(tbClassUnitFee.Text);
+			obj.BaseRegistrationFee = decimal.Parse(tbBaseRegistrationFee.Text);
+			obj.RegistrationEnabled = cbRegistrationEnabled.Checked;
+			obj.RegistrationStart = DateTime.Parse(tbRegistrationStart.Text);
+			obj.FullEarlyRegistrationFee = decimal.Parse(tbFullEarlyRegistrationFee.Text);
+			obj.EarlyEndDate = DateTime.Parse(tbEarlyEndDate.Text);
+			obj.FullRegistrationFee = decimal.Parse(tbFullRegistrationFee.Text);
+			obj.LateStartDate = DateTime.Parse(tbLateStartDate.Text);
+			obj.FullLateRegistrationFee = decimal.Parse(tbFullLateRegistrationFee.Text);
+			obj.RegistrationEnd = DateTime.Parse(tbRegistrationEnd.Text);
+			if(msOptions.IsChanged)
+			{
+				obj.Options = new DojoSeminarOptionCollection();
+				foreach(ListItem i in msOptions.Items)
+					if(i.Selected)
+						obj.Options.Add(DojoSeminarOption.NewPlaceHolder(int.Parse(i.Value)));
+			}
+
+			obj.Details = ftbDetails.Text;
+			obj.DetailsOverrideUrl = tbDetailsOverrideUrl.Text;
+			obj.PdfUrl = tbPdfUrl.Text;
+			if(comboItem.SelectedItem != null && comboItem.SelectedItem.Value != "Null")
+				obj.Item = RHItem.NewPlaceHolder(
+					int.Parse(comboItem.SelectedItem.Value));
+			else
+				obj.Item = null;
+
+			if(editOnAdd)
+				dojoSeminarID = obj.Save();
+			else
+				obj.Save();
+
+			if(resetOnAdd)
+			{
+				tbName.Text = string.Empty;
+				tbStartDate.Text = DateTime.Now.ToString();
+				tbEndDate.Text = DateTime.Now.ToString();
+				tbDescription.Text = string.Empty;
+				cbIsLocal.Checked = false;
+				tbClassUnitType.Text = string.Empty;
+				tbClassUnitFee.Text = string.Empty;
+				tbBaseRegistrationFee.Text = string.Empty;
+				cbRegistrationEnabled.Checked = false;
+				tbRegistrationStart.Text = DateTime.Now.ToString();
+				tbFullEarlyRegistrationFee.Text = string.Empty;
+				tbEarlyEndDate.Text = DateTime.Now.ToString();
+				tbFullRegistrationFee.Text = string.Empty;
+				tbLateStartDate.Text = DateTime.Now.ToString();
+				tbFullLateRegistrationFee.Text = string.Empty;
+				tbRegistrationEnd.Text = DateTime.Now.ToString();
+				ftbDetails.Text = string.Empty;
+				tbDetailsOverrideUrl.Text = string.Empty;
+				tbPdfUrl.Text = string.Empty;
+				msLocation.SelectedIndex = 0;
+				msItem.SelectedIndex = 0;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+			DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnPreRender(EventArgs e)
+		{
+			if(loadFlag)
+			{
+				if(dojoSeminarID > 0)
+				{
+					obj = new DojoSeminar(dojoSeminarID);
+					headerText.Text = "Edit  - " + obj.ToString();
+				}
+				else if(dojoSeminarID <= 0)
+				{
+					obj = new DojoSeminar();
+					headerText.Text = "Add ";
+				}
+
+				// Bind General Data
+				tbName.Text = obj.Name;
+				tbStartDate.Text = obj.StartDate.ToString();
+				tbEndDate.Text = obj.EndDate.ToString();
+				tbDescription.Text = obj.Description;
+				cbIsLocal.Checked = obj.IsLocal;
+				if(obj.Location != null)
+					foreach(ListItem item in comboLocation.Items)
+						item.Selected = obj.Location.ID.ToString() == item.Value;
+					else
+						msLocation.SelectedIndex = 0;
+
+				// Bind Registration Data
+				tbClassUnitType.Text = obj.ClassUnitType.ToString();
+				tbClassUnitFee.Text = obj.ClassUnitFee.ToString();
+				tbBaseRegistrationFee.Text = obj.BaseRegistrationFee.ToString();
+				cbRegistrationEnabled.Checked = obj.RegistrationEnabled;
+				tbRegistrationStart.Text = obj.RegistrationStart.ToString();
+				tbFullEarlyRegistrationFee.Text = obj.FullEarlyRegistrationFee.ToString();
+				tbEarlyEndDate.Text = obj.EarlyEndDate.ToString();
+				tbFullRegistrationFee.Text = obj.FullRegistrationFee.ToString();
+				tbLateStartDate.Text = obj.LateStartDate.ToString();
+				tbFullLateRegistrationFee.Text = obj.FullLateRegistrationFee.ToString();
+				tbRegistrationEnd.Text = obj.RegistrationEnd.ToString();
+				foreach(ListItem i in msOptions.Items)
+					foreach(DojoSeminarOption dojoSeminarOption in obj.Options)
+						if(i.Value == dojoSeminarOption.ID.ToString())
+						{
+							i.Selected = true;
+							break;
+						}
+
+				// Bind Details Data
+				ftbDetails.Text = obj.Details;
+				tbDetailsOverrideUrl.Text = obj.DetailsOverrideUrl;
+				tbPdfUrl.Text = obj.PdfUrl;
+
+				// Bind Rappahanock Data
+				if(obj.Item != null)
+					foreach(ListItem item in comboItem.Items)
+						item.Selected = obj.Item.ID.ToString() == item.Value;
+					else
+						msItem.SelectedIndex = 0;
+				tabstrip.SelectedTab = tabstrip.Tabs[0];
+			}
+		}
+
+		protected override void LoadViewState(object savedState)
+		{
+			if(savedState != null)
+			{
+				object[] myState = (object[]) savedState;
+				if(myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if(myState[1] != null)
+					dojoSeminarID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{
+			object baseState = base.SaveViewState();
+			object[] myState = new object[2];
+			myState[0] = baseState;
+			myState[1] = dojoSeminarID;
+			return myState;
+		}
+	}
+}
+

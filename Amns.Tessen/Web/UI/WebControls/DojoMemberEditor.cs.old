@@ -1,0 +1,686 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.ComponentModel;
+using Amns.GreyFox.People;
+using Amns.GreyFox.Web.UI.WebControls;
+using Amns.GreyFox.Security;
+using ComponentArt.Web.UI;
+
+namespace Amns.GreyFox.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// The member editor is a dynamic editor which displays information based on the
+	/// role setting provided. It will edit all properties of a member, and in addition
+	/// insert, delete, update their Amns.GreyFox accounts information.
+	/// 
+	/// This editor can also trigger promotion scans if configured to do so.
+	/// </summary>
+	[DefaultProperty("Text"), 
+		ToolboxData("<{0}:DojoMemberEditor runat=server></{0}:DojoMemberEditor>")]
+	public class DojoMemberEditor : TableWindow, INamingContainer
+	{
+		private int memberID;
+		private bool resetOnAdd;
+		private bool autoEdit;
+		private string connectionString;
+
+        private TextBox tbName = new TextBox();
+		private TextBox tbAddress1 = new TextBox();
+		private TextBox tbAddress2 = new TextBox();
+		private TextBox tbCity = new TextBox();
+		private TextBox tbStateProvince = new TextBox();
+		private TextBox tbPostalCode = new TextBox();
+		private TextBox tbCountry = new TextBox();
+		private CheckBox cbBadMailingAddress = new CheckBox();
+		private TextBox tbHomePhone = new TextBox();
+		private TextBox tbWorkPhone = new TextBox();
+		private TextBox tbMobilePhone = new TextBox();
+		private TextBox tbPager = new TextBox();
+		private TextBox tbEmail1 = new TextBox();
+		private TextBox tbEmail2 = new TextBox();
+		private TextBox tbUrl = new TextBox();
+		private ComponentArt.Web.UI.Calendar calBirthDate = new ComponentArt.Web.UI.Calendar();
+		private TextBox tbMemoText = new TextBox();
+
+		private DropDownList ddStudentType = new DropDownList();
+		private DropDownList ddUsers = new DropDownList();
+		private DateEditor tbMemberDate = new DateEditor();
+		private CheckBox cbActive = new CheckBox();
+		
+		private CheckBox cbSignedWaiver = new CheckBox();
+		private DropDownList ddRank = new DropDownList();
+		private DateEditor tbRankDate = new DateEditor();
+		private DropDownList ddPromotionFlag = new DropDownList();
+		private CheckBox cbInstructor = new CheckBox();
+		
+		private TextBox tbOrganizationID = new TextBox();
+		private CheckBox cbOrganizationActive = new CheckBox();
+		private CheckBox cbIsPastDue = new CheckBox();
+
+		private Button btOk = new Button();
+		private Button btCancel = new Button();
+		private Button btDelete = new Button();
+
+		private DojoMember member;
+
+		#region Public Properties
+		
+		[Bindable(true),
+		Category("Behavior"),
+		DefaultValue(0)]
+		public int MemberID
+		{
+			get
+			{
+				return memberID;
+			}
+			set
+			{
+				memberID = value;
+			}
+		}
+
+		[Bindable(true),
+		Category("Data"),
+		DefaultValue("")]
+		public string ConnectionString
+		{
+			get
+			{
+				return connectionString;
+			}
+			set
+			{
+				connectionString = value;
+			}
+		}
+
+		[Bindable(true),
+		Category("Behavior"),
+		DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true),
+		Category("Behavior"),
+		DefaultValue(false)]
+		public bool AutoEdit
+		{
+			get
+			{
+				return autoEdit;
+			}
+			set
+			{
+				autoEdit = value;
+			}
+		}
+
+		#endregion
+
+		// Organization activity cannot be set here, it is set through organization interractions,
+		// however it is displayed with a javascript selector. A drop down list has the organizations
+		// available for the student to be part of, and the student's status in the organization.
+		// On promotion scans, organization status codes for students can be required.
+
+		protected override void CreateChildControls()
+		{			
+			Controls.Clear();
+			bindDropDownLists();
+
+			tbName.Width = Unit.Pixel(200);
+			tbName.EnableViewState = false;
+			tbName.TabIndex = (short) (TabIndex);
+			Controls.Add(tbName);
+
+			tbAddress1.Width = Unit.Pixel(175);
+			tbAddress1.EnableViewState = false;
+			tbAddress1.TabIndex = (short) (TabIndex + 1);
+			Controls.Add(tbAddress1);
+
+			tbAddress2.Width = Unit.Pixel(175);
+			tbAddress2.EnableViewState = false;
+			tbAddress2.TabIndex = (short) (TabIndex + 2);
+			Controls.Add(tbAddress2);
+
+			tbCity.Width = Unit.Pixel(175);
+			tbCity.EnableViewState = false;
+			tbCity.TabIndex = (short) (TabIndex + 3);
+			Controls.Add(tbCity);
+
+			tbStateProvince.Width = Unit.Pixel(175);
+			tbStateProvince.EnableViewState = false;
+			tbStateProvince.TabIndex = (short) (TabIndex + 4);
+			Controls.Add(tbStateProvince);
+
+			tbPostalCode.Width = Unit.Pixel(175);
+			tbPostalCode.EnableViewState = false;
+			tbPostalCode.TabIndex = (short) (TabIndex + 5);
+			Controls.Add(tbPostalCode);
+
+			tbCountry.Width = Unit.Pixel(175);
+			tbCountry.EnableViewState = false;
+			tbCountry.TabIndex = (short) (TabIndex + 6);
+			Controls.Add(tbCountry);
+
+			cbBadMailingAddress.EnableViewState = false;
+			cbBadMailingAddress.TabIndex = (short) (TabIndex + 7);
+			Controls.Add(cbBadMailingAddress);
+
+			tbHomePhone.Width = Unit.Pixel(175);
+			tbHomePhone.EnableViewState = false;
+			tbHomePhone.TabIndex = (short) (TabIndex + 7);
+			Controls.Add(tbHomePhone);
+
+			tbWorkPhone.Width = Unit.Pixel(175);
+			tbWorkPhone.EnableViewState = false;
+			tbWorkPhone.TabIndex = (short) (TabIndex + 8);
+			Controls.Add(tbWorkPhone);
+
+			tbMobilePhone.Width = Unit.Pixel(175);
+			tbMobilePhone.EnableViewState = false;
+			tbMobilePhone.TabIndex = (short) (TabIndex + 9);
+			Controls.Add(tbMobilePhone);
+
+			tbPager.Width = Unit.Pixel(175);
+			tbPager.EnableViewState = false;
+			tbPager.TabIndex = (short) (TabIndex + 10);
+			Controls.Add(tbPager);
+
+			tbEmail1.Width = Unit.Pixel(175);
+			tbEmail1.EnableViewState = false;
+			tbEmail1.TabIndex = (short) (TabIndex + 11);
+			Controls.Add(tbEmail1);
+
+			tbEmail2.Width = Unit.Pixel(175);
+			tbEmail2.EnableViewState = false;
+			tbEmail2.TabIndex = (short) (TabIndex + 12);
+			Controls.Add(tbEmail2);
+
+			tbUrl.Width = Unit.Pixel(175);
+			tbUrl.EnableViewState = false;
+			tbUrl.TabIndex = (short) (TabIndex + 13);
+			Controls.Add(tbUrl);
+
+			calBirthDate.ControlType = ComponentArt.Web.UI.CalendarControlType.Picker;
+			calBirthDate.SelectedDate = DateTime.Parse("1/1/1980");			
+			calBirthDate.PickerCustomFormat = "MMMM d yyyy";
+			calBirthDate.PickerFormat = ComponentArt.Web.UI.DateTimeFormatType.Custom;
+			calBirthDate.TabIndex = (short) (TabIndex + 14);
+			Controls.Add(calBirthDate);
+
+			ddStudentType.EnableViewState = false;
+			ddStudentType.TabIndex = (short) (TabIndex + 15);
+			Controls.Add(ddStudentType);
+
+			tbMemberDate.Format = "MONTH;/;DAY;/;YEAR;";
+			tbMemberDate.AutoAdjust = true;
+			tbMemberDate.TabBase = (short) (TabIndex + 16);
+			Controls.Add(tbMemberDate);
+
+			cbActive.EnableViewState = false;
+			cbActive.TabIndex = (short) (TabIndex + 17);
+			Controls.Add(cbActive);
+
+			cbSignedWaiver.EnableViewState = false;
+			cbSignedWaiver.TabIndex = (short) (TabIndex + 19);
+			Controls.Add(cbSignedWaiver);
+
+			ddRank.EnableViewState = false;
+			ddRank.TabIndex = (short) (TabIndex + 20);
+			Controls.Add(ddRank);
+
+			tbRankDate.Format = "MONTH;/;DAY;/;YEAR;";
+			tbRankDate.AutoAdjust = true;
+			tbRankDate.TabBase = (short) (TabIndex + 21);
+			Controls.Add(tbRankDate);
+
+			ddPromotionFlag.EnableViewState = false;
+			ddPromotionFlag.TabIndex = (short) (TabIndex + 22);
+			Controls.Add(ddPromotionFlag);
+
+			cbInstructor.EnableViewState = false;
+			cbInstructor.TabIndex = (short) (TabIndex + 23);
+			Controls.Add(cbInstructor);
+
+			tbOrganizationID.EnableViewState = false;
+			tbOrganizationID.TabIndex = (short) (TabIndex + 24);
+			Controls.Add(tbOrganizationID);
+
+			cbOrganizationActive.EnableViewState = false;
+			cbOrganizationActive.TabIndex = (short) (TabIndex + 25);
+			Controls.Add(cbOrganizationActive);
+
+			cbIsPastDue.EnableViewState = false;
+			cbIsPastDue.TabIndex = (short) (TabIndex + 26);
+			Controls.Add(cbIsPastDue);
+
+			ddUsers.EnableViewState = false;
+			ddUsers.TabIndex = (short) (TabIndex + 27);
+			Controls.Add(ddUsers);
+
+			tbMemoText.TextMode = TextBoxMode.MultiLine;
+			tbMemoText.Rows = 7;
+			tbMemoText.Width = Unit.Percentage(100);
+			tbMemoText.EnableViewState = false;
+			tbMemoText.TabIndex = (short) (TabIndex + 28);
+			Controls.Add(tbMemoText);
+
+			btOk.Text = "OK";
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			btOk.TabIndex = (short) (TabIndex + 29);
+			Controls.Add(btOk);
+
+			btCancel.Text = "Cancel";
+			btCancel.EnableViewState = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			btCancel.TabIndex = (short) (TabIndex + 30);
+			Controls.Add(btCancel);
+
+			btDelete.Text = "Delete";
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			btDelete.TabIndex = (short) (TabIndex + 31);
+			Controls.Add(btDelete);
+
+			ChildControlsCreated = true;
+		}
+
+		private void bindDropDownLists()
+		{
+			ddStudentType.DataSource = DojoMemberTypeManager.DropDownData();
+			ddStudentType.DataTextField = "Name";
+			ddStudentType.DataValueField = "DojoMemberTypeID";
+			ddStudentType.DataBind();
+
+			GreyFoxUserManager userManager = new GreyFoxUserManager();
+			GreyFoxUserCollection users = userManager.GetCollection(string.Empty, string.Empty, null);
+			ddUsers.Items.Add(new ListItem("No Account", "0"));	
+			foreach(GreyFoxUser user in users)
+				ddUsers.Items.Add(new ListItem(user.UserName, user.ID.ToString()));			
+
+			ddRank.DataSource = DojoRankManager.DropDownData();
+			ddRank.DataTextField = "Name";
+			ddRank.DataValueField = "DojoRankID";
+			ddRank.DataBind();
+
+			ddPromotionFlag.DataSource = DojoPromotionFlagManager.DropDownData();
+			ddPromotionFlag.DataTextField = "Name";
+			ddPromotionFlag.DataValueField = "DojoPromotionFlagID";
+			ddPromotionFlag.DataBind();
+		}
+		
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(memberID == 0)
+			{
+				member = new DojoMember();
+				member.PrivateContact = new GreyFoxContact("kitTessen_Members_PrivateContacts");
+			}
+			else
+			{
+				member = new DojoMember(memberID);
+			}
+			
+			member.PrivateContact.ParseName(tbName.Text);
+			member.PrivateContact.ParseAddress(tbAddress1.Text, tbAddress2.Text, 
+				tbCity.Text, tbStateProvince.Text, tbPostalCode.Text, tbCountry.Text);
+			member.PrivateContact.SetValidationFlag(ContactValidationFlag.BadMailingAddress, cbBadMailingAddress.Checked);
+			member.PrivateContact.ParsePhones(tbHomePhone.Text, tbWorkPhone.Text,
+                string.Empty, tbPager.Text, tbMobilePhone.Text);
+			member.PrivateContact.Email1 = tbEmail1.Text;
+			member.PrivateContact.Email2 = tbEmail2.Text;
+			member.PrivateContact.Url = tbUrl.Text;
+			member.PrivateContact.BirthDate = calBirthDate.SelectedDate;
+			member.PrivateContact.MemoText = tbMemoText.Text;
+			member.PrivateContact.Save();
+
+			member.MemberType = DojoMemberType.NewPlaceHolder(int.Parse(ddStudentType.SelectedItem.Value));
+			member.MembershipDate = tbMemberDate.Date;
+			member.IsActive = cbActive.Checked;
+			member.IsPastDue = cbIsPastDue.Checked;
+			member.IsPrimaryOrganizationActive = cbOrganizationActive.Checked;
+			member.HasWaiver = cbSignedWaiver.Checked;
+			member.Rank = DojoRank.NewPlaceHolder(int.Parse(ddRank.SelectedItem.Value));
+			member.RankDate = tbRankDate.Date;
+			member.IsInstructor = cbInstructor.Checked;
+
+			if(ddUsers.SelectedItem.Value != "0")
+                member.User = GreyFoxUser.NewPlaceHolder(int.Parse(ddUsers.SelectedItem.Value));
+			else
+				member.User = null;
+			
+			if(autoEdit)
+			{
+				memberID = member.Save();
+			}
+			else
+			{
+				member.Save();
+			}
+			
+			if(resetOnAdd)
+			{
+				tbName.Text = string.Empty;
+				tbAddress1.Text = string.Empty;
+				tbAddress2.Text = string.Empty;
+				tbCity.Text = string.Empty;
+				tbStateProvince.Text = string.Empty;
+				tbPostalCode.Text = string.Empty;
+				tbCountry.Text = string.Empty;
+				tbHomePhone.Text = string.Empty;
+				tbWorkPhone.Text = string.Empty;
+				tbMobilePhone.Text = string.Empty;
+				tbPager.Text = string.Empty;
+				tbEmail1.Text = string.Empty;
+				tbEmail2.Text = string.Empty;
+				tbUrl.Text = string.Empty;
+				calBirthDate.SelectedDate = DateTime.Parse("1/1/1980");
+				tbMemoText.Text = string.Empty;
+				tbRankDate.Date = DateTime.Now;
+
+				ddStudentType.SelectedIndex = 0;
+				tbMemberDate.Date = DateTime.Now;
+				cbActive.Checked = false;
+				cbIsPastDue.Checked = false;
+				cbOrganizationActive.Checked = false;
+				cbSignedWaiver.Checked = false;
+				ddRank.SelectedIndex = 0;
+				cbInstructor.Checked = false;
+				ddUsers.SelectedIndex = -1;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		#region Public Control Events
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Created;
+		protected virtual void OnCreated(EventArgs e)
+		{
+			if(Created != null)
+				Created(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+				DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnInit(EventArgs e)
+		{
+			columnCount = 4;
+			features = TableWindowFeatures.DisableContentSeparation;
+		}
+
+		protected override void OnPreRender(EventArgs e)
+		{
+//			Page.RegisterHiddenField(UniqueID + "___POSTBACK", "1");
+
+			if(memberID != 0)
+			{
+				member = new DojoMember(memberID);
+				tbName.Text = member.PrivateContact.FullName;
+				tbAddress1.Text = member.PrivateContact.Address1;
+				tbAddress2.Text = member.PrivateContact.Address2;
+				tbCity.Text = member.PrivateContact.City;
+				tbStateProvince.Text = member.PrivateContact.StateProvince;
+				tbPostalCode.Text = member.PrivateContact.PostalCode;
+				tbCountry.Text = member.PrivateContact.Country;
+				cbBadMailingAddress.Checked = member.PrivateContact.GetValidationFlag(ContactValidationFlag.BadMailingAddress);
+				tbHomePhone.Text = member.PrivateContact.HomePhone;
+				tbWorkPhone.Text = member.PrivateContact.WorkPhone;
+				tbMobilePhone.Text = member.PrivateContact.MobilePhone;
+				tbPager.Text = member.PrivateContact.Pager;
+				tbEmail1.Text = member.PrivateContact.Email1;
+				tbEmail2.Text = member.PrivateContact.Email2;
+				tbUrl.Text = member.PrivateContact.Url;
+				calBirthDate.SelectedDate = member.PrivateContact.BirthDate;
+				tbMemoText.Text = member.PrivateContact.MemoText;
+				tbRankDate.Date = member.RankDate;
+
+				foreach(ListItem item in ddStudentType.Items)
+					item.Selected = member.MemberType.ID.ToString() == item.Value;
+				tbMemberDate.Date = member.MembershipDate;
+				cbActive.Checked = member.IsActive;
+				cbIsPastDue.Checked = member.IsPastDue;
+				cbOrganizationActive.Checked = member.IsPrimaryOrganizationActive;
+				cbSignedWaiver.Checked = member.HasWaiver;
+				foreach(ListItem item in ddRank.Items)
+					item.Selected = member.Rank.ID.ToString() == item.Value;
+				cbInstructor.Checked = member.IsInstructor;
+				//				tbOrganizationID.Text = member.OrganizationID.ToString();
+				//				cbOrganizationActive.Checked = member.OrganizationActive;
+				if(member.User != null)
+					foreach(ListItem item in ddUsers.Items)
+						item.Selected = member.User.ID.ToString() == item.Value;
+				
+				Text = "Edit Member - " + member.PrivateContact.FullName;
+			}
+			else
+			{
+				member = new DojoMember();
+				Text = "Add Member";
+			}
+
+			EnsureWindowScripts();
+		}
+
+		protected override void RenderContent(HtmlTextWriter output)
+		{
+			output.WriteFullBeginTag("tr");
+			RenderCell("Member ID", "class=\"row1\"");
+			RenderCell(memberID.ToString(), "class=\"row2\"");
+			RenderCell("&nbsp", "class=\"row1\"");
+			RenderCell("&nbsp", "class=\"row2\"");
+			output.WriteEndTag("tr");
+
+			RenderPropertyRows(2, "row1", "row2", 
+				new string[] { 
+					"Name",				"Member Type", 
+					"Address",			"Member Date", 
+					"",					"Active", 
+					"City",				"Signed Waiver", 
+					"State/Province",	"Rank", 
+					"PostalCode",		"Rank Date", 
+					"Country",			"Promotion Flag", 
+					"Home",				"Instructor",	
+					"Work",				"Organization ID",
+					"Mobile",			"Organization Active", 
+					"Pager",			"", 
+					"Email 1",			"Past Due", 
+					"Email 2",			"Bad Address", 
+					"Url",				"", 
+					"Birth Date",		"User"
+				},
+				new Control[] {
+					tbName,				ddStudentType,
+					tbAddress1,			tbMemberDate, 
+					tbAddress2,			cbActive, 
+					tbCity,				cbSignedWaiver,
+					tbStateProvince,	ddRank, 
+					tbPostalCode,		tbRankDate,
+					tbCountry,			ddPromotionFlag, 
+					tbHomePhone,		cbInstructor, 
+					tbWorkPhone,		tbOrganizationID,
+					tbMobilePhone,		cbOrganizationActive, 
+					tbPager,			null, 
+					tbEmail1,			cbIsPastDue, 
+					tbEmail2,			cbBadMailingAddress, 
+					tbUrl,				null, 
+					calBirthDate,		ddUsers				
+				});
+
+			output.WriteFullBeginTag("tr");
+			output.WriteBeginTag("td");
+			output.WriteAttribute("colspan", "4");
+			output.WriteAttribute("class", SubHeaderCssClass);
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.Write("Attendance Details as of ");
+			output.Write(member.LastAttendanceScan);
+			output.WriteEndTag("td");
+			output.WriteEndTag("tr");
+
+			output.WriteFullBeginTag("tr");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row1");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.Write("Training Time In Membership");
+			output.WriteEndTag("td");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row2");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.Write(member.TimeInMembership.TotalHours);
+			output.Write(" hrs.");
+			output.WriteEndTag("td");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row1");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.WriteLine("Last Signin");
+			output.WriteEndTag("td");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row2");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.Write(member.LastSignin.ToLongDateString());
+			output.WriteEndTag("td");
+			
+			output.WriteEndTag("tr");
+
+			output.WriteFullBeginTag("tr");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row1");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.WriteLine("Training Time In Rank");
+			output.WriteEndTag("td");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row2");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.Write(member.TimeInRank.TotalHours);
+			output.Write(" hrs.");
+			output.WriteEndTag("td");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row1");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.WriteLine("&nbsp;");
+			output.WriteEndTag("td");
+			
+			output.WriteBeginTag("td");
+			output.WriteAttribute("class", "row2");
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.Write("&nbsp;");
+			output.WriteEndTag("td");
+			
+			output.WriteEndTag("tr");
+						
+			output.WriteFullBeginTag("tr");
+			output.WriteBeginTag("td");
+			output.WriteAttribute("colspan", "4");
+			output.WriteAttribute("class", SubHeaderCssClass);
+			output.Write(HtmlTextWriter.TagRightChar);
+			output.Write("Memo");
+			output.WriteEndTag("td");
+			output.WriteEndTag("tr");
+
+			output.WriteFullBeginTag("tr");
+			output.WriteBeginTag("td");
+			output.WriteAttribute("colspan", "4");
+			output.WriteAttribute("class", "row1");
+			output.Write(HtmlTextWriter.TagRightChar);
+			tbMemoText.RenderControl(output);
+			output.WriteEndTag("td");
+			output.WriteEndTag("tr");
+
+			output.WriteFullBeginTag("tr");
+			output.WriteBeginTag("td");
+			output.WriteAttribute("colspan", "4");
+			output.WriteAttribute("align", "right");
+			output.WriteAttribute("class", "row1");
+			output.Write(HtmlTextWriter.TagRightChar);
+			btOk.RenderControl(output);
+			output.Write("&nbsp;");
+			btCancel.RenderControl(output);
+			if(DeleteClicked != null)
+			{
+				output.Write("&nbsp;");
+				btDelete.RenderControl(output);
+			}
+			output.WriteEndTag("td");
+			output.WriteEndTag("tr");			
+		}
+
+		#region ViewState Methods
+
+		protected override void LoadViewState(object savedState) 
+		{
+			if(savedState != null)
+			{
+				// Load State from the array of objects that was saved at ;
+				// SavedViewState.
+				object[] myState = (object[])savedState;
+				if (myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if (myState[1] != null)
+					memberID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{			
+			object baseState = base.SaveViewState();
+			object[] myState = new object[5];
+			myState[0] = baseState;
+			myState[1] = memberID;
+			return myState;
+		}
+
+		#endregion
+
+	}
+}

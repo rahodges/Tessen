@@ -1,0 +1,540 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// Default web editor for DojoTestList.
+	/// </summary>
+	[ToolboxData("<{0}:DojoTestListEditor runat=server></{0}:DojoTestListEditor>")]
+	public class DojoTestListEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+	{
+		private int dojoTestListID;
+		private DojoTestList obj;
+		private bool loadFlag = false;
+		private bool resetOnAdd;
+		private bool editOnAdd;
+
+		protected ComponentArt.Web.UI.TabStrip tabstrip;
+		protected ComponentArt.Web.UI.MultiPage multipage;
+		protected Literal headerText;
+
+		#region Private Control Fields for _system Folder
+
+		protected ComponentArt.Web.UI.PageView _systemView;
+		private Literal ltCreateDate;
+		private Literal ltModifyDate;
+
+		#endregion
+
+		#region Private Control Fields for General Folder
+
+		protected ComponentArt.Web.UI.PageView GeneralView;
+		private ComponentArt.Web.UI.ComboBox comboTest;
+		private ComponentArt.Web.UI.ComboBox comboStatus;
+		private ComponentArt.Web.UI.ComboBox comboEditor;
+		private TextBox tbEditorComments;
+		private CheckBox cbField1;
+
+		#endregion
+
+		#region Private Control Fields for System Folder
+
+		protected ComponentArt.Web.UI.PageView SystemView;
+		private Literal ltCandidatesCompileDate;
+
+		#endregion
+
+		private Button btOk;
+		private Button btCancel;
+		private Button btDelete;
+
+		#region Public Control Properties
+
+		[Bindable(true), Category("Data"), DefaultValue(0)]
+		public int DojoTestListID
+		{
+			get
+			{
+				return dojoTestListID;
+			}
+			set
+			{
+				loadFlag = true;
+				dojoTestListID = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool EditOnAdd
+		{
+			get
+			{
+				return editOnAdd;
+			}
+			set
+			{
+				editOnAdd = value;
+			}
+		}
+
+		#endregion
+
+		protected override void CreateChildControls()
+		{
+			Panel container = new Panel();
+			container.CssClass = this.CssClass;
+			Controls.Add(container);
+			Panel header = new Panel();
+			header.CssClass = "pHead";
+			container.Controls.Add(header);
+			headerText = new Literal();
+			header.Controls.Add(headerText);
+			Panel content = new Panel();
+			content.CssClass = "pContent";
+			container.Controls.Add(content);
+			#region Tab Strip
+
+			tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+			// Create the DefaultTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+			defaultTabLook.LookId = "DefaultTabLook";
+			defaultTabLook.CssClass = "DefaultTab";
+			defaultTabLook.HoverCssClass = "DefaultTabHover";
+			defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+			defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+			defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+			defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+			defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+			defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+			defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+			defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+			defaultTabLook.LeftIconWidth = Unit.Parse("3");
+			defaultTabLook.LeftIconHeight = Unit.Parse("21");
+			defaultTabLook.RightIconWidth = Unit.Parse("3");
+			defaultTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(defaultTabLook);
+
+			// Create the SelectedTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+			selectedTabLook.LookId = "SelectedTabLook";
+			selectedTabLook.CssClass = "SelectedTab";
+			selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+			selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+			selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+			selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+			selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+			selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+			selectedTabLook.LeftIconWidth = Unit.Parse("3");
+			selectedTabLook.LeftIconHeight = Unit.Parse("21");
+			selectedTabLook.RightIconWidth = Unit.Parse("3");
+			selectedTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(selectedTabLook);
+
+			tabstrip.ID = this.ID + "_TabStrip";
+			tabstrip.CssClass = "TopGroup";
+			tabstrip.DefaultItemLookId = "DefaultTabLook";
+			tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+			tabstrip.DefaultGroupTabSpacing = 1;
+			tabstrip.ImagesBaseUrl = "tabstrip_images/";
+			tabstrip.MultiPageId = this.ID + "_MultiPage";
+			content.Controls.Add(tabstrip);
+
+			#endregion
+
+			#region MultiPage
+
+			multipage = new ComponentArt.Web.UI.MultiPage();
+			multipage.ID = this.ID + "_MultiPage";
+			multipage.CssClass = "MultiPage";
+			content.Controls.Add(multipage);
+
+			#endregion
+
+			#region Child Controls for _system Folder
+
+			_systemView = new ComponentArt.Web.UI.PageView();
+			_systemView.CssClass = "PageContent";
+			multipage.PageViews.Add(_systemView);
+
+			TabStripTab _systemTab = new TabStripTab();
+			_systemTab.Text = "_system";
+			_systemTab.PageViewId = _systemView.ID;
+			tabstrip.Tabs.Add(_systemTab);
+
+			_systemView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			_systemView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">CreateDate</span>"));
+			_systemView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			ltCreateDate = new Literal();
+			ltCreateDate.EnableViewState = false;
+			_systemView.Controls.Add(ltCreateDate);
+			_systemView.Controls.Add(new LiteralControl("</span></div>"));
+
+			_systemView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			_systemView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ModifyDate</span>"));
+			_systemView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			ltModifyDate = new Literal();
+			ltModifyDate.EnableViewState = false;
+			_systemView.Controls.Add(ltModifyDate);
+			_systemView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for General Folder
+
+			GeneralView = new ComponentArt.Web.UI.PageView();
+			GeneralView.CssClass = "PageContent";
+			multipage.PageViews.Add(GeneralView);
+
+			TabStripTab GeneralTab = new TabStripTab();
+			GeneralTab.Text = "General";
+			GeneralTab.PageViewId = GeneralView.ID;
+			tabstrip.Tabs.Add(GeneralTab);
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Test</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboTest = new ComponentArt.Web.UI.ComboBox();
+			comboTest.CssClass = "comboBox";
+			comboTest.HoverCssClass = "comboBoxHover";
+			comboTest.FocusedCssClass = "comboBoxHover";
+			comboTest.TextBoxCssClass = "comboTextBox";
+			comboTest.DropDownCssClass = "comboDropDown";
+			comboTest.ItemCssClass = "comboItem";
+			comboTest.ItemHoverCssClass = "comboItemHover";
+			comboTest.SelectedItemCssClass = "comboItemHover";
+			comboTest.DropHoverImageUrl = "images/drop_hover.gif";
+			comboTest.DropImageUrl = "images/drop.gif";
+			comboTest.Width = Unit.Pixel(300);
+			GeneralView.Controls.Add(comboTest);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Status</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboStatus = new ComponentArt.Web.UI.ComboBox();
+			comboStatus.CssClass = "comboBox";
+			comboStatus.HoverCssClass = "comboBoxHover";
+			comboStatus.FocusedCssClass = "comboBoxHover";
+			comboStatus.TextBoxCssClass = "comboTextBox";
+			comboStatus.DropDownCssClass = "comboDropDown";
+			comboStatus.ItemCssClass = "comboItem";
+			comboStatus.ItemHoverCssClass = "comboItemHover";
+			comboStatus.SelectedItemCssClass = "comboItemHover";
+			comboStatus.DropHoverImageUrl = "images/drop_hover.gif";
+			comboStatus.DropImageUrl = "images/drop.gif";
+			comboStatus.Width = Unit.Pixel(300);
+			GeneralView.Controls.Add(comboStatus);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Editor</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboEditor = new ComponentArt.Web.UI.ComboBox();
+			comboEditor.CssClass = "comboBox";
+			comboEditor.HoverCssClass = "comboBoxHover";
+			comboEditor.FocusedCssClass = "comboBoxHover";
+			comboEditor.TextBoxCssClass = "comboTextBox";
+			comboEditor.DropDownCssClass = "comboDropDown";
+			comboEditor.ItemCssClass = "comboItem";
+			comboEditor.ItemHoverCssClass = "comboItemHover";
+			comboEditor.SelectedItemCssClass = "comboItemHover";
+			comboEditor.DropHoverImageUrl = "images/drop_hover.gif";
+			comboEditor.DropImageUrl = "images/drop.gif";
+			comboEditor.Width = Unit.Pixel(300);
+			GeneralView.Controls.Add(comboEditor);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">EditorComments</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbEditorComments = new TextBox();
+			tbEditorComments.EnableViewState = false;
+			GeneralView.Controls.Add(tbEditorComments);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			GeneralView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Field1</span>"));
+			GeneralView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbField1 = new CheckBox();
+			cbField1.EnableViewState = false;
+			GeneralView.Controls.Add(cbField1);
+			GeneralView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for System Folder
+
+			SystemView = new ComponentArt.Web.UI.PageView();
+			SystemView.CssClass = "PageContent";
+			multipage.PageViews.Add(SystemView);
+
+			TabStripTab SystemTab = new TabStripTab();
+			SystemTab.Text = "System";
+			SystemTab.PageViewId = SystemView.ID;
+			tabstrip.Tabs.Add(SystemTab);
+
+			SystemView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Candidates</span>"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			SystemView.Controls.Add(new LiteralControl("</span></div>"));
+
+			SystemView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">CandidatesCompileDate</span>"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			ltCandidatesCompileDate = new Literal();
+			ltCandidatesCompileDate.EnableViewState = false;
+			SystemView.Controls.Add(ltCandidatesCompileDate);
+			SystemView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			Panel buttons = new Panel();
+			buttons.CssClass = "pButtons";
+			content.Controls.Add(buttons);
+
+			btOk = new Button();
+			btOk.Text = "OK";
+			btOk.Width = Unit.Pixel(72);
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			buttons.Controls.Add(btOk);
+
+			btCancel = new Button();
+			btCancel.Text = "Cancel";
+			btCancel.Width = Unit.Pixel(72);
+			btCancel.EnableViewState = false;
+			btCancel.CausesValidation = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			buttons.Controls.Add(btCancel);
+
+			btDelete = new Button();
+			btDelete.Text = "Delete";
+			btDelete.Width = Unit.Pixel(72);
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			buttons.Controls.Add(btDelete);
+
+			bind();
+			ChildControlsCreated = true;
+		}
+
+		private void bind()
+		{
+			#region Bind General Child Data
+
+			DojoTestManager testManager = new DojoTestManager();
+			DojoTestCollection testCollection = testManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem TestNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			TestNullItem.Text = "Null";
+			TestNullItem.Value = "Null";
+			comboTest.Items.Add(TestNullItem);
+			foreach(DojoTest test in testCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = test.ToString();
+				i.Value = test.ID.ToString();
+				comboTest.Items.Add(i);
+			}
+
+			DojoTestListStatusManager statusManager = new DojoTestListStatusManager();
+			DojoTestListStatusCollection statusCollection = statusManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem StatusNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			StatusNullItem.Text = "Null";
+			StatusNullItem.Value = "Null";
+			comboStatus.Items.Add(StatusNullItem);
+			foreach(DojoTestListStatus status in statusCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = status.ToString();
+				i.Value = status.ID.ToString();
+				comboStatus.Items.Add(i);
+			}
+
+			DojoMemberManager editorManager = new DojoMemberManager();
+			DojoMemberCollection editorCollection = editorManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem EditorNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			EditorNullItem.Text = "Null";
+			EditorNullItem.Value = "Null";
+			comboEditor.Items.Add(EditorNullItem);
+			foreach(DojoMember editor in editorCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = editor.ToString();
+				i.Value = editor.ID.ToString();
+				comboEditor.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind System Child Data
+
+			#endregion
+
+		}
+
+		#region Events
+
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(dojoTestListID == 0)
+				obj = new DojoTestList();
+			else
+				obj = new DojoTestList(dojoTestListID);
+
+			if(comboTest.SelectedItem != null && comboTest.SelectedItem.Value != "Null")
+				obj.Test = DojoTest.NewPlaceHolder(
+					int.Parse(comboTest.SelectedItem.Value));
+			else
+				obj.Test = null;
+
+			if(comboStatus.SelectedItem != null && comboStatus.SelectedItem.Value != "Null")
+				obj.Status = DojoTestListStatus.NewPlaceHolder(
+					int.Parse(comboStatus.SelectedItem.Value));
+			else
+				obj.Status = null;
+
+			if(comboEditor.SelectedItem != null && comboEditor.SelectedItem.Value != "Null")
+				obj.Editor = DojoMember.NewPlaceHolder(
+					int.Parse(comboEditor.SelectedItem.Value));
+			else
+				obj.Editor = null;
+
+			obj.EditorComments = tbEditorComments.Text;
+			obj.Field1 = cbField1.Checked;
+			if(editOnAdd)
+				dojoTestListID = obj.Save();
+			else
+				obj.Save();
+
+			if(resetOnAdd)
+			{
+				tbEditorComments.Text = string.Empty;
+				cbField1.Checked = false;
+				msTest.SelectedIndex = 0;
+				msStatus.SelectedIndex = 0;
+				msEditor.SelectedIndex = 0;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+			DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnPreRender(EventArgs e)
+		{
+			if(loadFlag)
+			{
+				if(dojoTestListID > 0)
+				{
+					obj = new DojoTestList(dojoTestListID);
+					headerText.Text = "Edit  - " + obj.ToString();
+				}
+				else if(dojoTestListID <= 0)
+				{
+					obj = new DojoTestList();
+					headerText.Text = "Add ";
+				}
+
+				// Bind _system Data
+				ltCreateDate.Text = obj.CreateDate.ToString();
+				ltModifyDate.Text = obj.ModifyDate.ToString();
+
+				// Bind General Data
+				if(obj.Test != null)
+					foreach(ListItem item in comboTest.Items)
+						item.Selected = obj.Test.ID.ToString() == item.Value;
+					else
+						msTest.SelectedIndex = 0;
+				if(obj.Status != null)
+					foreach(ListItem item in comboStatus.Items)
+						item.Selected = obj.Status.ID.ToString() == item.Value;
+					else
+						msStatus.SelectedIndex = 0;
+				if(obj.Editor != null)
+					foreach(ListItem item in comboEditor.Items)
+						item.Selected = obj.Editor.ID.ToString() == item.Value;
+					else
+						msEditor.SelectedIndex = 0;
+				tbEditorComments.Text = obj.EditorComments;
+				cbField1.Checked = obj.Field1;
+
+				// Bind System Data
+				ltCandidatesCompileDate.Text = obj.CandidatesCompileDate.ToString();
+				tabstrip.SelectedTab = tabstrip.Tabs[0];
+			}
+		}
+
+		protected override void LoadViewState(object savedState)
+		{
+			if(savedState != null)
+			{
+				object[] myState = (object[]) savedState;
+				if(myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if(myState[1] != null)
+					dojoTestListID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{
+			object baseState = base.SaveViewState();
+			object[] myState = new object[2];
+			myState[0] = baseState;
+			myState[1] = dojoTestListID;
+			return myState;
+		}
+	}
+}
+

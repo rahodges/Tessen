@@ -1,0 +1,515 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using Amns.Rappahanock;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// Default web editor for DojoRank.
+	/// </summary>
+	[ToolboxData("<{0}:DojoRankEditor runat=server></{0}:DojoRankEditor>")]
+	public class DojoRankEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+	{
+		private int dojoRankID;
+		private DojoRank obj;
+		private bool loadFlag = false;
+		private bool resetOnAdd;
+		private bool editOnAdd;
+
+		protected ComponentArt.Web.UI.TabStrip tabstrip;
+		protected ComponentArt.Web.UI.MultiPage multipage;
+		protected Literal headerText;
+
+		#region Private Control Fields for Default Folder
+
+		protected ComponentArt.Web.UI.PageView DefaultView;
+		private TextBox tbName;
+		private TextBox tbPromotionTimeInRank;
+		private TextBox tbPromotionTimeFromLastTest;
+		private TextBox tbPromotionRequirements;
+		private TextBox tbPromotionFee;
+		private ComponentArt.Web.UI.ComboBox comboPromotionRank;
+		private CheckBox cbPromotionResetIP;
+		private TextBox tbOrderNum;
+		private RegularExpressionValidator revOrderNum;
+
+		#endregion
+
+		#region Private Control Fields for _system Folder
+
+		protected ComponentArt.Web.UI.PageView _systemView;
+
+		#endregion
+
+		#region Private Control Fields for Rappahanock Folder
+
+		protected ComponentArt.Web.UI.PageView RappahanockView;
+		private ComponentArt.Web.UI.ComboBox comboItem;
+
+		#endregion
+
+		private Button btOk;
+		private Button btCancel;
+		private Button btDelete;
+
+		#region Public Control Properties
+
+		[Bindable(true), Category("Data"), DefaultValue(0)]
+		public int DojoRankID
+		{
+			get
+			{
+				return dojoRankID;
+			}
+			set
+			{
+				loadFlag = true;
+				dojoRankID = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool EditOnAdd
+		{
+			get
+			{
+				return editOnAdd;
+			}
+			set
+			{
+				editOnAdd = value;
+			}
+		}
+
+		#endregion
+
+		protected override void CreateChildControls()
+		{
+			Panel container = new Panel();
+			container.CssClass = this.CssClass;
+			Controls.Add(container);
+			Panel header = new Panel();
+			header.CssClass = "pHead";
+			container.Controls.Add(header);
+			headerText = new Literal();
+			header.Controls.Add(headerText);
+			Panel content = new Panel();
+			content.CssClass = "pContent";
+			container.Controls.Add(content);
+			#region Tab Strip
+
+			tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+			// Create the DefaultTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+			defaultTabLook.LookId = "DefaultTabLook";
+			defaultTabLook.CssClass = "DefaultTab";
+			defaultTabLook.HoverCssClass = "DefaultTabHover";
+			defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+			defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+			defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+			defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+			defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+			defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+			defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+			defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+			defaultTabLook.LeftIconWidth = Unit.Parse("3");
+			defaultTabLook.LeftIconHeight = Unit.Parse("21");
+			defaultTabLook.RightIconWidth = Unit.Parse("3");
+			defaultTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(defaultTabLook);
+
+			// Create the SelectedTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+			selectedTabLook.LookId = "SelectedTabLook";
+			selectedTabLook.CssClass = "SelectedTab";
+			selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+			selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+			selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+			selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+			selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+			selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+			selectedTabLook.LeftIconWidth = Unit.Parse("3");
+			selectedTabLook.LeftIconHeight = Unit.Parse("21");
+			selectedTabLook.RightIconWidth = Unit.Parse("3");
+			selectedTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(selectedTabLook);
+
+			tabstrip.ID = this.ID + "_TabStrip";
+			tabstrip.CssClass = "TopGroup";
+			tabstrip.DefaultItemLookId = "DefaultTabLook";
+			tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+			tabstrip.DefaultGroupTabSpacing = 1;
+			tabstrip.ImagesBaseUrl = "tabstrip_images/";
+			tabstrip.MultiPageId = this.ID + "_MultiPage";
+			content.Controls.Add(tabstrip);
+
+			#endregion
+
+			#region MultiPage
+
+			multipage = new ComponentArt.Web.UI.MultiPage();
+			multipage.ID = this.ID + "_MultiPage";
+			multipage.CssClass = "MultiPage";
+			content.Controls.Add(multipage);
+
+			#endregion
+
+			#region Child Controls for Default Folder
+
+			DefaultView = new ComponentArt.Web.UI.PageView();
+			DefaultView.CssClass = "PageContent";
+			multipage.PageViews.Add(DefaultView);
+
+			TabStripTab DefaultTab = new TabStripTab();
+			DefaultTab.Text = "Default";
+			DefaultTab.PageViewId = DefaultView.ID;
+			tabstrip.Tabs.Add(DefaultTab);
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Name</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbName = new TextBox();
+			tbName.EnableViewState = false;
+			DefaultView.Controls.Add(tbName);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Promotion Time In Rank</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbPromotionTimeInRank = new TextBox();
+			tbPromotionTimeInRank.EnableViewState = false;
+			DefaultView.Controls.Add(tbPromotionTimeInRank);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Promotion Time From Last Test</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbPromotionTimeFromLastTest = new TextBox();
+			tbPromotionTimeFromLastTest.EnableViewState = false;
+			DefaultView.Controls.Add(tbPromotionTimeFromLastTest);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Promotion Requirements</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbPromotionRequirements = new TextBox();
+			tbPromotionRequirements.EnableViewState = false;
+			DefaultView.Controls.Add(tbPromotionRequirements);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Promotion Fee</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbPromotionFee = new TextBox();
+			tbPromotionFee.EnableViewState = false;
+			DefaultView.Controls.Add(tbPromotionFee);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PromotionRank</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboPromotionRank = new ComponentArt.Web.UI.ComboBox();
+			comboPromotionRank.CssClass = "comboBox";
+			comboPromotionRank.HoverCssClass = "comboBoxHover";
+			comboPromotionRank.FocusedCssClass = "comboBoxHover";
+			comboPromotionRank.TextBoxCssClass = "comboTextBox";
+			comboPromotionRank.DropDownCssClass = "comboDropDown";
+			comboPromotionRank.ItemCssClass = "comboItem";
+			comboPromotionRank.ItemHoverCssClass = "comboItemHover";
+			comboPromotionRank.SelectedItemCssClass = "comboItemHover";
+			comboPromotionRank.DropHoverImageUrl = "images/drop_hover.gif";
+			comboPromotionRank.DropImageUrl = "images/drop.gif";
+			comboPromotionRank.Width = Unit.Pixel(300);
+			DefaultView.Controls.Add(comboPromotionRank);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PromotionResetIP</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbPromotionResetIP = new CheckBox();
+			cbPromotionResetIP.EnableViewState = false;
+			DefaultView.Controls.Add(cbPromotionResetIP);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OrderNum</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbOrderNum = new TextBox();
+			tbOrderNum.ID = this.ID + "_OrderNum";
+			tbOrderNum.EnableViewState = false;
+			DefaultView.Controls.Add(tbOrderNum);
+			revOrderNum = new RegularExpressionValidator();
+			revOrderNum.ControlToValidate = tbOrderNum.ID;
+			revOrderNum.ValidationExpression = "^(\\+|-)?\\d+$";
+			revOrderNum.ErrorMessage = "*";
+			revOrderNum.Display = ValidatorDisplay.Dynamic;
+			revOrderNum.EnableViewState = false;
+			DefaultView.Controls.Add(revOrderNum);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Rappahanock Folder
+
+			RappahanockView = new ComponentArt.Web.UI.PageView();
+			RappahanockView.CssClass = "PageContent";
+			multipage.PageViews.Add(RappahanockView);
+
+			TabStripTab RappahanockTab = new TabStripTab();
+			RappahanockTab.Text = "Rappahanock";
+			RappahanockTab.PageViewId = RappahanockView.ID;
+			tabstrip.Tabs.Add(RappahanockTab);
+
+			RappahanockView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RappahanockView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Item</span>"));
+			RappahanockView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboItem = new ComponentArt.Web.UI.ComboBox();
+			comboItem.CssClass = "comboBox";
+			comboItem.HoverCssClass = "comboBoxHover";
+			comboItem.FocusedCssClass = "comboBoxHover";
+			comboItem.TextBoxCssClass = "comboTextBox";
+			comboItem.DropDownCssClass = "comboDropDown";
+			comboItem.ItemCssClass = "comboItem";
+			comboItem.ItemHoverCssClass = "comboItemHover";
+			comboItem.SelectedItemCssClass = "comboItemHover";
+			comboItem.DropHoverImageUrl = "images/drop_hover.gif";
+			comboItem.DropImageUrl = "images/drop.gif";
+			comboItem.Width = Unit.Pixel(300);
+			RappahanockView.Controls.Add(comboItem);
+			RappahanockView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			Panel buttons = new Panel();
+			buttons.CssClass = "pButtons";
+			content.Controls.Add(buttons);
+
+			btOk = new Button();
+			btOk.Text = "OK";
+			btOk.Width = Unit.Pixel(72);
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			buttons.Controls.Add(btOk);
+
+			btCancel = new Button();
+			btCancel.Text = "Cancel";
+			btCancel.Width = Unit.Pixel(72);
+			btCancel.EnableViewState = false;
+			btCancel.CausesValidation = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			buttons.Controls.Add(btCancel);
+
+			btDelete = new Button();
+			btDelete.Text = "Delete";
+			btDelete.Width = Unit.Pixel(72);
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			buttons.Controls.Add(btDelete);
+
+			bind();
+			ChildControlsCreated = true;
+		}
+
+		private void bind()
+		{
+			#region Bind Default Child Data
+
+			DojoRankManager promotionRankManager = new DojoRankManager();
+			DojoRankCollection promotionRankCollection = promotionRankManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem PromotionRankNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			PromotionRankNullItem.Text = "Null";
+			PromotionRankNullItem.Value = "Null";
+			comboPromotionRank.Items.Add(PromotionRankNullItem);
+			foreach(DojoRank promotionRank in promotionRankCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = promotionRank.ToString();
+				i.Value = promotionRank.ID.ToString();
+				comboPromotionRank.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Rappahanock Child Data
+
+			RHItemManager itemManager = new RHItemManager();
+			RHItemCollection itemCollection = itemManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ItemNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ItemNullItem.Text = "Null";
+			ItemNullItem.Value = "Null";
+			comboItem.Items.Add(ItemNullItem);
+			foreach(RHItem item in itemCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = item.ToString();
+				i.Value = item.ID.ToString();
+				comboItem.Items.Add(i);
+			}
+
+			#endregion
+
+		}
+
+		#region Events
+
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(dojoRankID == 0)
+				obj = new DojoRank();
+			else
+				obj = new DojoRank(dojoRankID);
+
+			obj.Name = tbName.Text;
+			obj.PromotionTimeInRank = TimeSpan.Parse(tbPromotionTimeInRank.Text);
+			obj.PromotionTimeFromLastTest = TimeSpan.Parse(tbPromotionTimeFromLastTest.Text);
+			obj.PromotionRequirements = tbPromotionRequirements.Text;
+			obj.PromotionFee = decimal.Parse(tbPromotionFee.Text);
+			if(comboPromotionRank.SelectedItem != null && comboPromotionRank.SelectedItem.Value != "Null")
+				obj.PromotionRank = DojoRank.NewPlaceHolder(
+					int.Parse(comboPromotionRank.SelectedItem.Value));
+			else
+				obj.PromotionRank = null;
+
+			obj.PromotionResetIP = cbPromotionResetIP.Checked;
+			obj.OrderNum = int.Parse(tbOrderNum.Text);
+			if(comboItem.SelectedItem != null && comboItem.SelectedItem.Value != "Null")
+				obj.Item = RHItem.NewPlaceHolder(
+					int.Parse(comboItem.SelectedItem.Value));
+			else
+				obj.Item = null;
+
+			if(editOnAdd)
+				dojoRankID = obj.Save();
+			else
+				obj.Save();
+
+			if(resetOnAdd)
+			{
+				tbName.Text = string.Empty;
+				tbPromotionTimeInRank.Text = string.Empty;
+				tbPromotionTimeFromLastTest.Text = string.Empty;
+				tbPromotionRequirements.Text = string.Empty;
+				tbPromotionFee.Text = string.Empty;
+				cbPromotionResetIP.Checked = false;
+				tbOrderNum.Text = string.Empty;
+				msPromotionRank.SelectedIndex = 0;
+				msItem.SelectedIndex = 0;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+			DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnPreRender(EventArgs e)
+		{
+			if(loadFlag)
+			{
+				if(dojoRankID > 0)
+				{
+					obj = new DojoRank(dojoRankID);
+					headerText.Text = "Edit  - " + obj.ToString();
+				}
+				else if(dojoRankID <= 0)
+				{
+					obj = new DojoRank();
+					headerText.Text = "Add ";
+				}
+
+				// Bind Default Data
+				tbName.Text = obj.Name;
+				tbPromotionTimeInRank.Text = obj.PromotionTimeInRank.ToString();
+				tbPromotionTimeFromLastTest.Text = obj.PromotionTimeFromLastTest.ToString();
+				tbPromotionRequirements.Text = obj.PromotionRequirements;
+				tbPromotionFee.Text = obj.PromotionFee.ToString();
+				if(obj.PromotionRank != null)
+					foreach(ListItem item in comboPromotionRank.Items)
+						item.Selected = obj.PromotionRank.ID.ToString() == item.Value;
+					else
+						msPromotionRank.SelectedIndex = 0;
+				cbPromotionResetIP.Checked = obj.PromotionResetIP;
+				tbOrderNum.Text = obj.OrderNum.ToString();
+
+				// Bind Rappahanock Data
+				if(obj.Item != null)
+					foreach(ListItem item in comboItem.Items)
+						item.Selected = obj.Item.ID.ToString() == item.Value;
+					else
+						msItem.SelectedIndex = 0;
+				tabstrip.SelectedTab = tabstrip.Tabs[0];
+			}
+		}
+
+		protected override void LoadViewState(object savedState)
+		{
+			if(savedState != null)
+			{
+				object[] myState = (object[]) savedState;
+				if(myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if(myState[1] != null)
+					dojoRankID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{
+			object baseState = base.SaveViewState();
+			object[] myState = new object[2];
+			myState[0] = baseState;
+			myState[1] = dojoRankID;
+			return myState;
+		}
+	}
+}
+

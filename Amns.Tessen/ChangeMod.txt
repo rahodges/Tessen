@@ -1,0 +1,122 @@
+Version 3.0 - In Progress
+-------------------------------
+
+Renamed to Version 3.0!
+
+ADDED FEATURES
+
+	* Rappahanock support for financial software added.
+	* Added Membership/MembershipTemplates
+	* Seminars now use a reservation system.
+	* Payflow Pro is now supported for the seminar registration
+	  control.
+	 
+NOTES:
+	
+	* Verify must be called on all Manager Classes to add
+	  new columns to database.
+	* SeminarRegistrationOption must change Quantity to Decimal
+	  in the database!	
+
+ PayflowLinkUrl="https://payflowlink.paypal.com" 
+ PayflowLogin="ASDojo" 
+ PayflowHost="test-payflow.verisign.com"
+ PayflowPartner="PayPal" 
+ PayflowPassword="blastFacTor945" 
+ PayflowUser="webtransact" 
+
+Version 2.20 - November 2, 2006
+-------------------------------
+
+ADDED FEATURES:
+
+	*	Seminars can now have early bird and late registration options.
+	*	Members can be assigned an attendance message for messages from
+		the office. These can only be cleared by the office manager.
+		Future versions will have office messages in a separate log.
+	*	Cleaned up Member Editor and Seminar Editor.
+	*	New version of GreyFox Implemented.
+	
+*	ALTER TABLE kitTessen_Members ADD COLUMN AttendanceMessage MEMO
+*	ALTER TABLE kitTessen_Seminars ADD COLUMN FullEarlyRegistrationFee DECIMAL
+*	ALTER TABLE kitTessen_Seminars ADD COLUMN EarlyEndDate DATE
+*	ALTER TABLE kitTessen_Seminars ADD COLUMN FullLateRegistrationFee DECIMAL
+*	ALTER TABLE kitTessen_Seminars ADD COLUMN LateStartDate DATE
+*	ALTER TABLE kitTessen_Seminars ADD COLUMN LineItemName TEXT(255)
+*	UPDATE kitTessen_Seminars SET 
+		FullEarlyRegistrationFee=0,
+		EarlyEndDate=RegistrationStart,
+		FullLateRegistrationFee=0,
+		LateStartDate=RegistrationEnd,		
+		LineItemName=''	
+*	UPDATE kitTessen_Members SET
+		AttendanceMessage=''	
+
+Version 2.10 - September 7, 2006
+--------------------------------
+
+ADDED FEATURES:
+
+	*	DojoClass can now specify which MemberType to limit classes.
+	*	DojoPromotionList is a new class to save a test list for
+		DojoMembers (test candidates). This also links to the DojoTest 
+		class to specify which test they are selected to attend.
+
+Version 2.00 - June 16, 2006
+--------------------------------
+
+ADDED FEATURES 
+
+	*	Promotion Features Extended
+	*	Grids all use GreyFox 2.0 Core Client Scripts
+	
+BUG FIXES
+
+	*	Attendance for student level tracking has been
+		completely rewritten to remedy lost hours bug.
+
+SQL UPDATES
+
+	*	ALTER TABLE kitTessen_Members ADD COLUMN IsPromotable BIT
+	*	UPDATE kitTessen_Members SET IsPromotable=FALSE;
+	*	ALTER TABLE kitTessen_Promotions ADD COLUMN StatusID LONG
+	*	ALTER TABLE kitTessen_Ranks ADD COLUMN PromotionResetIP BIT
+	*	CREATE TABLE kitTessen_PromotionStatuses (
+			PromotionStatusID LONG,
+			Name TEXT(255),
+			IsEligible BIT,
+			IsPassed BIT,
+			IsFailed BIT,
+			IsFiled BIT,
+			IsApproved BIT,
+			IsAwarded BIT,
+			OrderNum LONG
+		);
+	*	ALTER TABLE kitTessen_Organizations ADD COLUMN DefaultMemberTypeID LONG;
+	*	ALTER TABLE kitTessen_Organizations ADD COLUMN IsPrimary BIT;
+	*	UPDATE kitTessen_Organizations SET IsPrimary=FALSE;
+	*	UPDATE kitTessen_Organizations SET IsPrimary=TRUE WHERE DojoOrganizationID=1;
+	*	CREATE TABLE kitTessen_MemberTypesChildren_AllowedLocations (
+			DojoMemberTypeID LONG,
+			GreyFoxContactID LONG
+		);
+	*	CREATE TABLE kitTessen_MemberTypesChildren_DeniedLocations (
+			DojoMemberTypeID LONG,
+			GreyFoxContactID LONG
+		);	
+	*	CREATE TABLE kitTessen_OrganizationsChildren_ClassLocations (
+			DojoOrganizationID LONG,
+			GreyFoxContactID LONG
+		);
+	*	ALTER TABLE kitTessen_Members ADD COLUMN MemberContactID LONG
+	*	ALTER TABLE kitTessen_SeminarRegistrations ADD COLUMN StudentContactID LONG
+	
+	*	ALTER TABLE kitTessen_Members ADD COLUMN Instructor1ID LONG
+	*	ALTER TABLE kitTessen_Members ADD COLUMN Instructor2ID LONG
+	*	ALTER TABLE kitTessen_Members ADD COLUMN Instructor3ID LONG
+
+--------------------------------
+Version 1.00 - December 11, 2003
+--------------------------------
+
+*	Release of first version.

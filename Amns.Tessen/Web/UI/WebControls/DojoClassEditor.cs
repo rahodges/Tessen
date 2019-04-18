@@ -1,0 +1,708 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using Amns.GreyFox.People;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+    /// <summary>
+    /// Default web editor for DojoClass.
+    /// </summary>
+    [ToolboxData("<{0}:DojoClassEditor runat=server></{0}:DojoClassEditor>")]
+    public class DojoClassEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+    {
+        private int dojoClassID;
+        private DojoClass obj;
+        private bool loadFlag = false;
+        private bool resetOnAdd;
+        private bool editOnAdd;
+
+        protected ComponentArt.Web.UI.TabStrip tabstrip;
+        protected ComponentArt.Web.UI.MultiPage multipage;
+        protected Literal headerText;
+
+        #region Private Control Fields for Default Folder
+
+        protected ComponentArt.Web.UI.PageView DefaultView;
+        private TextBox tbName;
+        private ComponentArt.Web.UI.ComboBox comboInstructor;
+        private ComponentArt.Web.UI.ComboBox comboParentSeminar;
+        private ComponentArt.Web.UI.ComboBox comboParentDefinition;
+        private ComponentArt.Web.UI.ComboBox comboLocation;
+        private ComponentArt.Web.UI.ComboBox comboAccessControlGroup;
+
+        #endregion
+
+        #region Private Control Fields for Occupancy Folder
+
+        protected ComponentArt.Web.UI.PageView OccupancyView;
+        private TextBox tbOccupancyMax;
+        private RegularExpressionValidator revOccupancyMax;
+        private TextBox tbOccupancyTarget;
+        private RegularExpressionValidator revOccupancyTarget;
+        private TextBox tbOccupancyCurrent;
+        private RegularExpressionValidator revOccupancyCurrent;
+        private TextBox tbOccupancyCheckDate;
+
+        #endregion
+
+        #region Private Control Fields for _system Folder
+
+        protected ComponentArt.Web.UI.PageView _systemView;
+
+        #endregion
+
+        #region Private Control Fields for Schedule Folder
+
+        protected ComponentArt.Web.UI.PageView ScheduleView;
+        private TextBox tbSigninStart;
+        private TextBox tbSigninEnd;
+        private TextBox tbClassStart;
+        private TextBox tbClassEnd;
+
+        #endregion
+
+        private Button btOk;
+        private Button btCancel;
+        private Button btDelete;
+
+        #region Public Control Properties
+
+        [Bindable(true), Category("Data"), DefaultValue(0)]
+        public int DojoClassID
+        {
+            get
+            {
+                return dojoClassID;
+            }
+            set
+            {
+                loadFlag = true;
+                dojoClassID = value;
+            }
+        }
+
+        [Bindable(true), Category("Behavior"), DefaultValue(false)]
+        public bool ResetOnAdd
+        {
+            get
+            {
+                return resetOnAdd;
+            }
+            set
+            {
+                resetOnAdd = value;
+            }
+        }
+
+        [Bindable(true), Category("Behavior"), DefaultValue(false)]
+        public bool EditOnAdd
+        {
+            get
+            {
+                return editOnAdd;
+            }
+            set
+            {
+                editOnAdd = value;
+            }
+        }
+
+        #endregion
+
+        protected override void CreateChildControls()
+        {
+            Panel container = new Panel();
+            container.CssClass = this.CssClass;
+            Controls.Add(container);
+            Panel header = new Panel();
+            header.CssClass = "pHead";
+            container.Controls.Add(header);
+            headerText = new Literal();
+            header.Controls.Add(headerText);
+            Panel content = new Panel();
+            content.CssClass = "pContent";
+            container.Controls.Add(content);
+            #region Tab Strip
+
+            tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+            // Create the DefaultTabLook instance and add it to the ItemLooks collection
+            ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+            defaultTabLook.LookId = "DefaultTabLook";
+            defaultTabLook.CssClass = "DefaultTab";
+            defaultTabLook.HoverCssClass = "DefaultTabHover";
+            defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+            defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+            defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+            defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+            defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+            defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+            defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+            defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+            defaultTabLook.LeftIconWidth = Unit.Parse("3");
+            defaultTabLook.LeftIconHeight = Unit.Parse("21");
+            defaultTabLook.RightIconWidth = Unit.Parse("3");
+            defaultTabLook.RightIconHeight = Unit.Parse("21");
+            tabstrip.ItemLooks.Add(defaultTabLook);
+
+            // Create the SelectedTabLook instance and add it to the ItemLooks collection
+            ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+            selectedTabLook.LookId = "SelectedTabLook";
+            selectedTabLook.CssClass = "SelectedTab";
+            selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+            selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+            selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+            selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+            selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+            selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+            selectedTabLook.LeftIconWidth = Unit.Parse("3");
+            selectedTabLook.LeftIconHeight = Unit.Parse("21");
+            selectedTabLook.RightIconWidth = Unit.Parse("3");
+            selectedTabLook.RightIconHeight = Unit.Parse("21");
+            tabstrip.ItemLooks.Add(selectedTabLook);
+
+            tabstrip.ID = this.ID + "_TabStrip";
+            tabstrip.CssClass = "TopGroup";
+            tabstrip.DefaultItemLookId = "DefaultTabLook";
+            tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+            tabstrip.DefaultGroupTabSpacing = 1;
+            tabstrip.ImagesBaseUrl = "tabstrip_images/";
+            tabstrip.MultiPageId = this.ID + "_MultiPage";
+            content.Controls.Add(tabstrip);
+
+            #endregion
+
+            #region MultiPage
+
+            multipage = new ComponentArt.Web.UI.MultiPage();
+            multipage.ID = this.ID + "_MultiPage";
+            multipage.CssClass = "MultiPage";
+            content.Controls.Add(multipage);
+
+            #endregion
+
+            #region Child Controls for Default Folder
+
+            DefaultView = new ComponentArt.Web.UI.PageView();
+            DefaultView.CssClass = "PageContent";
+            multipage.PageViews.Add(DefaultView);
+
+            TabStripTab DefaultTab = new TabStripTab();
+            DefaultTab.Text = "Default";
+            DefaultTab.PageViewId = DefaultView.ID;
+            tabstrip.Tabs.Add(DefaultTab);
+
+            DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class Name</span>"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbName = new TextBox();
+            tbName.EnableViewState = false;
+            DefaultView.Controls.Add(tbName);
+            DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+            DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Instructor</span>"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            comboInstructor = new ComponentArt.Web.UI.ComboBox();
+            comboInstructor.CssClass = "comboBox";
+            comboInstructor.HoverCssClass = "comboBoxHover";
+            comboInstructor.FocusedCssClass = "comboBoxHover";
+            comboInstructor.TextBoxCssClass = "comboTextBox";
+            comboInstructor.DropDownCssClass = "comboDropDown";
+            comboInstructor.ItemCssClass = "comboItem";
+            comboInstructor.ItemHoverCssClass = "comboItemHover";
+            comboInstructor.SelectedItemCssClass = "comboItemHover";
+            comboInstructor.DropHoverImageUrl = "combobox_images/drop_hover.gif";
+            comboInstructor.DropImageUrl = "combobox_images/drop.gif";
+            comboInstructor.Width = Unit.Pixel(300);
+            DefaultView.Controls.Add(comboInstructor);
+            DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+            DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ParentSeminar</span>"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            comboParentSeminar = new ComponentArt.Web.UI.ComboBox();
+            comboParentSeminar.CssClass = "comboBox";
+            comboParentSeminar.HoverCssClass = "comboBoxHover";
+            comboParentSeminar.FocusedCssClass = "comboBoxHover";
+            comboParentSeminar.TextBoxCssClass = "comboTextBox";
+            comboParentSeminar.DropDownCssClass = "comboDropDown";
+            comboParentSeminar.ItemCssClass = "comboItem";
+            comboParentSeminar.ItemHoverCssClass = "comboItemHover";
+            comboParentSeminar.SelectedItemCssClass = "comboItemHover";
+            comboParentSeminar.DropHoverImageUrl = "combobox_images/drop_hover.gif";
+            comboParentSeminar.DropImageUrl = "combobox_images/drop.gif";
+            comboParentSeminar.Width = Unit.Pixel(300);
+            DefaultView.Controls.Add(comboParentSeminar);
+            DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+            DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ParentDefinition</span>"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            comboParentDefinition = new ComponentArt.Web.UI.ComboBox();
+            comboParentDefinition.CssClass = "comboBox";
+            comboParentDefinition.HoverCssClass = "comboBoxHover";
+            comboParentDefinition.FocusedCssClass = "comboBoxHover";
+            comboParentDefinition.TextBoxCssClass = "comboTextBox";
+            comboParentDefinition.DropDownCssClass = "comboDropDown";
+            comboParentDefinition.ItemCssClass = "comboItem";
+            comboParentDefinition.ItemHoverCssClass = "comboItemHover";
+            comboParentDefinition.SelectedItemCssClass = "comboItemHover";
+            comboParentDefinition.DropHoverImageUrl = "combobox_images/drop_hover.gif";
+            comboParentDefinition.DropImageUrl = "combobox_images/drop.gif";
+            comboParentDefinition.Width = Unit.Pixel(300);
+            DefaultView.Controls.Add(comboParentDefinition);
+            DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+            DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Location</span>"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            comboLocation = new ComponentArt.Web.UI.ComboBox();
+            comboLocation.CssClass = "comboBox";
+            comboLocation.HoverCssClass = "comboBoxHover";
+            comboLocation.FocusedCssClass = "comboBoxHover";
+            comboLocation.TextBoxCssClass = "comboTextBox";
+            comboLocation.DropDownCssClass = "comboDropDown";
+            comboLocation.ItemCssClass = "comboItem";
+            comboLocation.ItemHoverCssClass = "comboItemHover";
+            comboLocation.SelectedItemCssClass = "comboItemHover";
+            comboLocation.DropHoverImageUrl = "combobox_images/drop_hover.gif";
+            comboLocation.DropImageUrl = "combobox_images/drop.gif";
+            comboLocation.Width = Unit.Pixel(300);
+            DefaultView.Controls.Add(comboLocation);
+            DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+            DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">AccessControlGroup</span>"));
+            DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            comboAccessControlGroup = new ComponentArt.Web.UI.ComboBox();
+            comboAccessControlGroup.CssClass = "comboBox";
+            comboAccessControlGroup.HoverCssClass = "comboBoxHover";
+            comboAccessControlGroup.FocusedCssClass = "comboBoxHover";
+            comboAccessControlGroup.TextBoxCssClass = "comboTextBox";
+            comboAccessControlGroup.DropDownCssClass = "comboDropDown";
+            comboAccessControlGroup.ItemCssClass = "comboItem";
+            comboAccessControlGroup.ItemHoverCssClass = "comboItemHover";
+            comboAccessControlGroup.SelectedItemCssClass = "comboItemHover";
+            comboAccessControlGroup.DropHoverImageUrl = "combobox_images/drop_hover.gif";
+            comboAccessControlGroup.DropImageUrl = "combobox_images/drop.gif";
+            comboAccessControlGroup.Width = Unit.Pixel(300);
+            DefaultView.Controls.Add(comboAccessControlGroup);
+            DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+            #endregion
+
+            #region Child Controls for Occupancy Folder
+
+            OccupancyView = new ComponentArt.Web.UI.PageView();
+            OccupancyView.CssClass = "PageContent";
+            multipage.PageViews.Add(OccupancyView);
+
+            TabStripTab OccupancyTab = new TabStripTab();
+            OccupancyTab.Text = "Occupancy";
+            OccupancyTab.PageViewId = OccupancyView.ID;
+            tabstrip.Tabs.Add(OccupancyTab);
+
+            OccupancyView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OccupancyMax</span>"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbOccupancyMax = new TextBox();
+            tbOccupancyMax.ID = this.ID + "_OccupancyMax";
+            tbOccupancyMax.EnableViewState = false;
+            OccupancyView.Controls.Add(tbOccupancyMax);
+            revOccupancyMax = new RegularExpressionValidator();
+            revOccupancyMax.ControlToValidate = tbOccupancyMax.ID;
+            revOccupancyMax.ValidationExpression = "^(\\+|-)?\\d+$";
+            revOccupancyMax.ErrorMessage = "*";
+            revOccupancyMax.Display = ValidatorDisplay.Dynamic;
+            revOccupancyMax.EnableViewState = false;
+            OccupancyView.Controls.Add(revOccupancyMax);
+            OccupancyView.Controls.Add(new LiteralControl("</span></div>"));
+
+            OccupancyView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OccupancyTarget</span>"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbOccupancyTarget = new TextBox();
+            tbOccupancyTarget.ID = this.ID + "_OccupancyTarget";
+            tbOccupancyTarget.EnableViewState = false;
+            OccupancyView.Controls.Add(tbOccupancyTarget);
+            revOccupancyTarget = new RegularExpressionValidator();
+            revOccupancyTarget.ControlToValidate = tbOccupancyTarget.ID;
+            revOccupancyTarget.ValidationExpression = "^(\\+|-)?\\d+$";
+            revOccupancyTarget.ErrorMessage = "*";
+            revOccupancyTarget.Display = ValidatorDisplay.Dynamic;
+            revOccupancyTarget.EnableViewState = false;
+            OccupancyView.Controls.Add(revOccupancyTarget);
+            OccupancyView.Controls.Add(new LiteralControl("</span></div>"));
+
+            OccupancyView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OccupancyCurrent</span>"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbOccupancyCurrent = new TextBox();
+            tbOccupancyCurrent.ID = this.ID + "_OccupancyCurrent";
+            tbOccupancyCurrent.EnableViewState = false;
+            OccupancyView.Controls.Add(tbOccupancyCurrent);
+            revOccupancyCurrent = new RegularExpressionValidator();
+            revOccupancyCurrent.ControlToValidate = tbOccupancyCurrent.ID;
+            revOccupancyCurrent.ValidationExpression = "^(\\+|-)?\\d+$";
+            revOccupancyCurrent.ErrorMessage = "*";
+            revOccupancyCurrent.Display = ValidatorDisplay.Dynamic;
+            revOccupancyCurrent.EnableViewState = false;
+            OccupancyView.Controls.Add(revOccupancyCurrent);
+            OccupancyView.Controls.Add(new LiteralControl("</span></div>"));
+
+            OccupancyView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">OccupancyCheckDate</span>"));
+            OccupancyView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbOccupancyCheckDate = new TextBox();
+            tbOccupancyCheckDate.EnableViewState = false;
+            OccupancyView.Controls.Add(tbOccupancyCheckDate);
+            OccupancyView.Controls.Add(new LiteralControl("</span></div>"));
+
+            #endregion
+
+            #region Child Controls for Schedule Folder
+
+            ScheduleView = new ComponentArt.Web.UI.PageView();
+            ScheduleView.CssClass = "PageContent";
+            multipage.PageViews.Add(ScheduleView);
+
+            TabStripTab ScheduleTab = new TabStripTab();
+            ScheduleTab.Text = "Schedule";
+            ScheduleTab.PageViewId = ScheduleView.ID;
+            tabstrip.Tabs.Add(ScheduleTab);
+
+            ScheduleView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Signin Start</span>"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbSigninStart = new TextBox();
+            tbSigninStart.EnableViewState = false;
+            ScheduleView.Controls.Add(tbSigninStart);
+            ScheduleView.Controls.Add(new LiteralControl("</span></div>"));
+
+            ScheduleView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Signin End</span>"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbSigninEnd = new TextBox();
+            tbSigninEnd.EnableViewState = false;
+            ScheduleView.Controls.Add(tbSigninEnd);
+            ScheduleView.Controls.Add(new LiteralControl("</span></div>"));
+
+            ScheduleView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class Start</span>"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbClassStart = new TextBox();
+            tbClassStart.EnableViewState = false;
+            ScheduleView.Controls.Add(tbClassStart);
+            ScheduleView.Controls.Add(new LiteralControl("</span></div>"));
+
+            ScheduleView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Class End</span>"));
+            ScheduleView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+            tbClassEnd = new TextBox();
+            tbClassEnd.EnableViewState = false;
+            ScheduleView.Controls.Add(tbClassEnd);
+            ScheduleView.Controls.Add(new LiteralControl("</span></div>"));
+
+            #endregion
+
+            Panel buttons = new Panel();
+            buttons.CssClass = "pButtons";
+            content.Controls.Add(buttons);
+
+            btOk = new Button();
+            btOk.Text = Localization.Strings.OK;
+            btOk.Width = Unit.Pixel(72);
+            btOk.EnableViewState = false;
+            btOk.Click += new EventHandler(ok_Click);
+            buttons.Controls.Add(btOk);
+
+            btCancel = new Button();
+            btCancel.Text = Localization.Strings.Cancel;
+            btCancel.Width = Unit.Pixel(72);
+            btCancel.EnableViewState = false;
+            btCancel.CausesValidation = false;
+            btCancel.Click += new EventHandler(cancel_Click);
+            buttons.Controls.Add(btCancel);
+
+            btDelete = new Button();
+            btDelete.Text = Localization.Strings.Delete;
+            btDelete.Width = Unit.Pixel(72);
+            btDelete.EnableViewState = false;
+            btDelete.Click += new EventHandler(delete_Click);
+            buttons.Controls.Add(btDelete);
+
+            bind();
+            ChildControlsCreated = true;
+        }
+
+        private void bind()
+        {
+            #region Bind Default Child Data
+
+            DojoMemberManager instructorManager = new DojoMemberManager();
+            DojoMemberCollection instructorCollection = instructorManager.GetCollection(string.Empty, string.Empty, null);
+            ComponentArt.Web.UI.ComboBoxItem InstructorNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+            InstructorNullItem.Text = "Null";
+            InstructorNullItem.Value = "Null";
+            comboInstructor.Items.Add(InstructorNullItem);
+            foreach (DojoMember instructor in instructorCollection)
+            {
+                ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+                i.Text = instructor.ToString();
+                i.Value = instructor.ID.ToString();
+                comboInstructor.Items.Add(i);
+            }
+
+            DojoSeminarManager parentSeminarManager = new DojoSeminarManager();
+            DojoSeminarCollection parentSeminarCollection = parentSeminarManager.GetCollection(string.Empty, string.Empty, null);
+            ComponentArt.Web.UI.ComboBoxItem ParentSeminarNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+            ParentSeminarNullItem.Text = "Null";
+            ParentSeminarNullItem.Value = "Null";
+            comboParentSeminar.Items.Add(ParentSeminarNullItem);
+            foreach (DojoSeminar parentSeminar in parentSeminarCollection)
+            {
+                ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+                i.Text = parentSeminar.ToString();
+                i.Value = parentSeminar.ID.ToString();
+                comboParentSeminar.Items.Add(i);
+            }
+
+            DojoClassDefinitionManager parentDefinitionManager = new DojoClassDefinitionManager();
+            DojoClassDefinitionCollection parentDefinitionCollection = parentDefinitionManager.GetCollection(string.Empty, string.Empty, null);
+            ComponentArt.Web.UI.ComboBoxItem ParentDefinitionNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+            ParentDefinitionNullItem.Text = "Null";
+            ParentDefinitionNullItem.Value = "Null";
+            comboParentDefinition.Items.Add(ParentDefinitionNullItem);
+            foreach (DojoClassDefinition parentDefinition in parentDefinitionCollection)
+            {
+                ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+                i.Text = parentDefinition.ToString();
+                i.Value = parentDefinition.ID.ToString();
+                comboParentDefinition.Items.Add(i);
+            }
+
+            GreyFoxContactManager locationManager = new GreyFoxContactManager("kitTessen_Locations");
+            GreyFoxContactCollection locationCollection = locationManager.GetCollection(string.Empty, string.Empty);
+            ComponentArt.Web.UI.ComboBoxItem LocationNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+            LocationNullItem.Text = "Null";
+            LocationNullItem.Value = "Null";
+            comboLocation.Items.Add(LocationNullItem);
+            foreach (GreyFoxContact location in locationCollection)
+            {
+                ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+                i.Text = location.ToString();
+                i.Value = location.ID.ToString();
+                comboLocation.Items.Add(i);
+            }
+
+            DojoAccessControlGroupManager accessControlGroupManager = new DojoAccessControlGroupManager();
+            DojoAccessControlGroupCollection accessControlGroupCollection = accessControlGroupManager.GetCollection(string.Empty, string.Empty, null);
+            ComponentArt.Web.UI.ComboBoxItem AccessControlGroupNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+            AccessControlGroupNullItem.Text = "Null";
+            AccessControlGroupNullItem.Value = "Null";
+            comboAccessControlGroup.Items.Add(AccessControlGroupNullItem);
+            foreach (DojoAccessControlGroup accessControlGroup in accessControlGroupCollection)
+            {
+                ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+                i.Text = accessControlGroup.ToString();
+                i.Value = accessControlGroup.ID.ToString();
+                comboAccessControlGroup.Items.Add(i);
+            }
+
+            #endregion
+
+        }
+
+        #region Events
+
+        protected void ok_Click(object sender, EventArgs e)
+        {
+            if (dojoClassID == 0)
+                obj = new DojoClass();
+            else
+                obj = new DojoClass(dojoClassID);
+
+            obj.Name = tbName.Text;
+            if (comboInstructor.SelectedItem != null && comboInstructor.SelectedItem.Value != "Null")
+                obj.Instructor = DojoMember.NewPlaceHolder(
+                    int.Parse(comboInstructor.SelectedItem.Value));
+            else
+                obj.Instructor = null;
+
+            if (comboParentSeminar.SelectedItem != null && comboParentSeminar.SelectedItem.Value != "Null")
+                obj.ParentSeminar = DojoSeminar.NewPlaceHolder(
+                    int.Parse(comboParentSeminar.SelectedItem.Value));
+            else
+                obj.ParentSeminar = null;
+
+            if (comboParentDefinition.SelectedItem != null && comboParentDefinition.SelectedItem.Value != "Null")
+                obj.ParentDefinition = DojoClassDefinition.NewPlaceHolder(
+                    int.Parse(comboParentDefinition.SelectedItem.Value));
+            else
+                obj.ParentDefinition = null;
+
+            if (comboLocation.SelectedItem != null && comboLocation.SelectedItem.Value != "Null")
+                obj.Location = GreyFoxContact.NewPlaceHolder("kitTessen_Locations",
+                    int.Parse(comboLocation.SelectedItem.Value));
+            else
+                obj.Location = null;
+
+            if (comboAccessControlGroup.SelectedItem != null && comboAccessControlGroup.SelectedItem.Value != "Null")
+                obj.AccessControlGroup = DojoAccessControlGroup.NewPlaceHolder(
+                    int.Parse(comboAccessControlGroup.SelectedItem.Value));
+            else
+                obj.AccessControlGroup = null;
+
+            obj.OccupancyMax = int.Parse(tbOccupancyMax.Text);
+            obj.OccupancyTarget = int.Parse(tbOccupancyTarget.Text);
+            obj.OccupancyCurrent = int.Parse(tbOccupancyCurrent.Text);
+            obj.OccupancyCheckDate = DateTime.Parse(tbOccupancyCheckDate.Text);
+            obj.SigninStart = DateTime.Parse(tbSigninStart.Text);
+            obj.SigninEnd = DateTime.Parse(tbSigninEnd.Text);
+            obj.ClassStart = DateTime.Parse(tbClassStart.Text);
+            obj.ClassEnd = DateTime.Parse(tbClassEnd.Text);
+            if (editOnAdd)
+                dojoClassID = obj.Save();
+            else
+                obj.Save();
+
+            if (resetOnAdd)
+            {
+                tbName.Text = string.Empty;
+                tbOccupancyMax.Text = string.Empty;
+                tbOccupancyTarget.Text = string.Empty;
+                tbOccupancyCurrent.Text = string.Empty;
+                tbOccupancyCheckDate.Text = DateTime.Now.ToString();
+                tbSigninStart.Text = DateTime.Now.ToString();
+                tbSigninEnd.Text = DateTime.Now.ToString();
+                tbClassStart.Text = DateTime.Now.ToString();
+                tbClassEnd.Text = DateTime.Now.ToString();
+                comboInstructor.SelectedIndex = 0;
+                comboParentSeminar.SelectedIndex = 0;
+                comboParentDefinition.SelectedIndex = 0;
+                comboLocation.SelectedIndex = 0;
+                comboAccessControlGroup.SelectedIndex = 0;
+            }
+
+            OnUpdated(EventArgs.Empty);
+        }
+
+        protected void cancel_Click(object sender, EventArgs e)
+        {
+            this.OnCancelled(EventArgs.Empty);
+        }
+
+        protected void delete_Click(object sender, EventArgs e)
+        {
+            this.OnDeleteClicked(EventArgs.Empty);
+        }
+
+        public event EventHandler Cancelled;
+        protected virtual void OnCancelled(EventArgs e)
+        {
+            if (Cancelled != null)
+                Cancelled(this, e);
+        }
+
+        public event EventHandler Updated;
+        protected virtual void OnUpdated(EventArgs e)
+        {
+            if (Updated != null)
+                Updated(this, e);
+        }
+
+        public event EventHandler DeleteClicked;
+        protected virtual void OnDeleteClicked(EventArgs e)
+        {
+            if (DeleteClicked != null)
+                DeleteClicked(this, e);
+        }
+
+        #endregion
+
+        protected override void OnPreRender(EventArgs e)
+        {
+            if (loadFlag)
+            {
+                if (dojoClassID > 0)
+                {
+                    obj = new DojoClass(dojoClassID);
+                    headerText.Text = "Edit  - " + obj.ToString();
+                }
+                else if (dojoClassID <= 0)
+                {
+                    obj = new DojoClass();
+                    headerText.Text = "Add ";
+                }
+
+                // Bind Default Data
+                tbName.Text = obj.Name;
+                if (obj.Instructor != null)
+                    foreach (ComboBoxItem item in comboInstructor.Items)
+                        item.Selected = obj.Instructor.ID.ToString() == item.Value;
+                else
+                    comboInstructor.SelectedIndex = 0;
+                if (obj.ParentSeminar != null)
+                    foreach (ComboBoxItem item in comboParentSeminar.Items)
+                        item.Selected = obj.ParentSeminar.ID.ToString() == item.Value;
+                else
+                    comboParentSeminar.SelectedIndex = 0;
+                if (obj.ParentDefinition != null)
+                    foreach (ComboBoxItem item in comboParentDefinition.Items)
+                        item.Selected = obj.ParentDefinition.ID.ToString() == item.Value;
+                else
+                    comboParentDefinition.SelectedIndex = 0;
+                if (obj.Location != null)
+                    foreach (ComboBoxItem item in comboLocation.Items)
+                        item.Selected = obj.Location.ID.ToString() == item.Value;
+                else
+                    comboLocation.SelectedIndex = 0;
+                if (obj.AccessControlGroup != null)
+                    foreach (ComboBoxItem item in comboAccessControlGroup.Items)
+                        item.Selected = obj.AccessControlGroup.ID.ToString() == item.Value;
+                else
+                    comboAccessControlGroup.SelectedIndex = 0;
+
+                // Bind Occupancy Data
+                tbOccupancyMax.Text = obj.OccupancyMax.ToString();
+                tbOccupancyTarget.Text = obj.OccupancyTarget.ToString();
+                tbOccupancyCurrent.Text = obj.OccupancyCurrent.ToString();
+                tbOccupancyCheckDate.Text = obj.OccupancyCheckDate.ToString();
+
+                // Bind Schedule Data
+                tbSigninStart.Text = obj.SigninStart.ToString();
+                tbSigninEnd.Text = obj.SigninEnd.ToString();
+                tbClassStart.Text = obj.ClassStart.ToString();
+                tbClassEnd.Text = obj.ClassEnd.ToString();
+                tabstrip.SelectedTab = tabstrip.Tabs[0];
+            }
+        }
+
+        protected override void LoadViewState(object savedState)
+        {
+            if (savedState != null)
+            {
+                object[] myState = (object[])savedState;
+                if (myState[0] != null)
+                    base.LoadViewState(myState[0]);
+                if (myState[1] != null)
+                    dojoClassID = (int)myState[1];
+            }
+        }
+
+        protected override object SaveViewState()
+        {
+            object baseState = base.SaveViewState();
+            object[] myState = new object[2];
+            myState[0] = baseState;
+            myState[1] = dojoClassID;
+            return myState;
+        }
+    }
+}

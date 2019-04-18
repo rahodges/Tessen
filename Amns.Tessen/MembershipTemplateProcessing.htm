@@ -1,0 +1,740 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <title></title>
+    <style type="text/css">
+        .style1
+        {
+            width: 100%;
+            font-size: x-small;
+            font-family: Arial;
+        }
+        .style2
+        {
+            font-weight: bold;
+            color: #FFFFFF;
+            font-size: x-small;
+            font-family: Arial;
+            background-color: #336699;
+            padding: 3px;             
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        AMNS Tessen</h1>
+    <h2>
+        Membership TypeTemplate Processing</h2>
+    <p>
+        Copyright © 2002 - 2008 Roy A.E. Hodges. All Rights Reserved. Patent(s) Pending.</p>
+    <h3>
+        Abstract</h3>
+    <p>
+        Membership templates are the foundation of memberships for the local organization,
+        sibling organizations and parent organizations. TypeTemplate processing has been
+        created in such a way to allow diverse flexibility with minimal effort. A member&#39;s
+        membership type determines which templates the member has access to for purchase
+        or renewal. In addition, a member can apply his or her template to any member&#39;s
+        in their membership group.</p>
+    <h3>
+        Processing Member Fields</h3>
+    <ul>
+        <li><b>Membership</b> - the current membership for the member.</li>
+        <li><b>MembershipType</b> - the current membership type for the member.</li>
+        <li><b>MembershipTreeCode</b> - the current tree code (child membership types) for the
+            member.</li>
+        <li><b>MembershipTypeTemplate</b> - the current membership template for the member (the
+            template&#39;s tree code must mach the member&#39;s tree code.</li>
+        <li><b>LastMembershipScan</b> - the last time membership scan passed over the member.</li>
+        <li><b>ParentMember</b> - the parent member.</li>
+        <li><b>RenewalBlock</b> - the member and parent members to the root member as non-renewable.</li>
+        <li><b>RenewalRetry </b>- the amount of retries for a renewal since the last MembershipScanDate.</li>
+        <li><b>PendingInactivation</b> - flags a member as pending inactivation which will be
+            determined by the time lapsed from the member&#39;s MemberType GracePeriod.</li>
+        <li><b>SpinOffRequested</b> - flags a member as pending spinoff on the next renewal.
+            (useful when parent members discontinue membership)</li>
+    </ul>
+    <h3>
+        Membership Types</h3>
+    <p>
+        Each member has an associated membership type that determines which elements are
+        available, these include classes, class definitions, membership templates, and ranks.
+        Classes and class definitions have the ability to limit which member types can attend
+        which classes, for example, only Adults can attend Adult classes and only Children
+        can attend Children Classes, while perhaps a special weekend class allows both Adult
+        and Children members.</p>
+    <ul>
+        <li>Adult (1)
+            <ul>
+                <li>SpinOff - Enabled</li>
+                <li>GracePeriod GracePeriod - 15 Days</li>
+                <li>LatePeriod - 20 Days</li>
+                <li>RenewalBlockOnIncreaseAmt - $20</li>
+            </ul>
+        </li>
+        <li>Child (2)
+            <ul>
+                <li>SpinOff - Disabled</li>
+                <li>GracePeriod GracePeriod - 15 Days</li>
+                <li>LatePeriod - 20 Days</li>
+                <li>RenewalBlockOnIncreaseAmt - $20</li>
+            </ul>
+        </li>
+        <li>Parent (3)
+            <ul>
+                <li>SpinOff - Enabled</li>
+                <li>GracePeriod GracePeriod - 15 Days</li>
+                <li>LatePeriod - 20 Days</li>
+                <li>RenewalBlockOnIncreaseAmt - $20</li>
+            </ul>
+        </li>
+        <li>Visitor (4)
+            <ul>
+                <li>SpinOff - Disabled</li>
+                <li>GracePeriod GracePeriod - 0 Days</li>
+                <li>LatePeriod - 0 Days</li>
+                <li>RenewalBlockOnIncreaseAmt - $20</li>
+            </ul>
+        </li>
+    </ul>
+    <h3>
+        MemberTypeTemplates</h3>
+    <p>
+        The basic templates included in Tessen are as follows:</p>
+    <ul>
+        <li>Adult - $85.00 (Adult) (1)</li>
+        <li>Adult Couples - $140 (Adult) (1,1)<ul>
+            <li>Adult Couple - Non Paying - $0 (Adult) (1)</li>
+        </ul>
+        </li>
+        <li>Adult Discount - $65 (Adult Discount) (4)</li>
+        <li>Adult Scholarship - $0 (Adult Scholarship) (5)</li>
+        <li>Adult w/ Child - $120 (Adult) (1,2)<ul>
+            <li>Adult w/ Child - Non Paying - $0 (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Adult w/ 2 Children - $150 (Adult) (1,2,2)<ul>
+            <li>Adult w/ 2 Children (1) - Non Paying - $0 (Child) (2)</li>
+            <li>Adult w/ 2 Children (2) - Non Paying - $0 (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Adult w/ 3 Children - $180 (Adult) (1,2,2,2)<ul>
+            <li>Adult w/ 2 Children (1) - Non Paying - $0 (Child) (2)</li>
+            <li>Adult w/ 2 Children (2) - Non Paying - $0 (Child) (2)</li>
+            <li>Adult w/ 2 Children (3) - Non Paying - $0 (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Parent w/ Child - $65 (Parent) (3,2)<ul>
+            <li>Child (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Parent w/ 2 Children - $95 (Parent) (3,2,2)<ul>
+            <li>Child (Child) (2)</li>
+            <li>Child (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Parent w/ 3 Children - $125 (Parent) (3,2,2,2)<ul>
+            <li>Child (Child) (2)</li>
+            <li>Child (Child) (2)</li>
+            <li>Child (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Senior - $65 (Senior) (6)</li>
+        <li>Senior Couple - $100 (Senior) (6,6)<ul>
+            <li>Senior Couple - Non Paying $0 (Senior) (6)</li>
+        </ul>
+        </li>
+    </ul>
+    <p>
+        OptionTypeTemplates will offer templates to a member if he or she satisfies requirements
+        of the OptionTypeTemplate. template requirements are as follows:</p>
+    <ul>
+        <li>OptAge - used for senior templates.</li>
+        <li>OptTimeIn - used for promotional templates for long term members.</li>
+        <li>OptRankUp - used for promotional templates for ranked members.</li>
+        <li>OptRankBelow - used for promotional templates for ranked members.</li>
+        <li>FrcRankUp - forces a membership for specified rank and above.</li>
+        <li>FrcRankBelow - forces a membership for specified rank and below.</li>
+    </ul>
+    <p>
+        The TypeTemplateOptions for the default templates are as follows:</p>
+    <ul>
+        <li>Adult - $85.00 (Adult) (1)<ul>
+            <li>Senior - $65 (Senior) (6)</li>
+            <li>Senior Couples - $100 (Senior) (6)</li>
+        </ul>
+        </li>
+        <li>Adult Couples - $140 (Adult) (1,1)<ul>
+            <li>Adult Couples (1) - Non Paying - $0 (Adult) (1)</li>
+        </ul>
+        </li>
+        <li>Adult Discount - $65 (Adult Discount) (4)</li>
+        <li>Adult Scholarship - $0 (Adult Scholarship) (5)</li>
+        <li>Adult w/ Child - $120 (Adult) (1,2)<ul>
+            <li>Adult w/ Child - Non Paying - $0 (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Adult w/ 2 Children - $150 (Adult) (1,2,2)<ul>
+            <li>Adult w/ 2 Children (1) - Non Paying - $0 (Child) (2)</li>
+            <li>Adult w/ 2 Children (2) - Non Paying - $0 (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Adult w/ 3 Children - $180 (Adult) (1,2,2,2)<ul>
+            <li>Adult w/ 2 Children (1) - Non Paying - $0 (Child) (2)</li>
+            <li>Adult w/ 2 Children (2) - Non Paying - $0 (Child) (2)</li>
+            <li>Adult w/ 2 Children (3) - Non Paying - $0 (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Parent w/ Child - $65 (Parent) (3,2)<ul>
+            <li>Child (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Parent w/ 2 Children - $95 (Parent) (3,2,2)<ul>
+            <li>Child (Child) (2)</li>
+            <li>Child (Child) (2)</li>
+        </ul>
+        </li>
+        <li>Parent w/ 3 Children - $125 (Parent) (3,2,2,2)<ul>
+            <li>Child (Child) (2)</li>
+            <li>Child (Child) (2)</li>
+            <li>Child (Child) (2)</li>
+        </ul>
+        </li>
+    </ul>
+    <h3>
+        MembershipScan Theory</h3>
+    <p>
+        When the system scans for &quot;availability&quot; it will find all root membership
+        templates (w/o parent templates) that have the MembershipType associated with the
+        member. Upon finding a membership type, the system will then examine each template
+        for application on the currrent member by walking the member&#39;s MembershipTree
+        and comparing it to the template&#39;s MembershipTree. If the system finds a match,
+        the system will add the template to the available templates.
+    </p>
+    <p>
+        To speed up this process each member and template has a &quot;MembershipTreeCode&quot;
+        which is a concatated string of MembershipTypes which is only updated if a member
+        has changed MembershipTypes or has submembers who have changed MembershipTypes.
+        This will look like [1,4,18,22] in the database. MembershipScan takes care of updating
+        MembershipTreeCode. A member may optionally purchase a higher level membership without
+        filling in the submembers till a later date. MembershipScan will provide an available
+        listing of available MemberTypes the member has used and has available.</p>
+    <p>
+        If a child memberhip template has a fee, the child member must pay the amount due.
+        This is equivalent to a co-pay situation.</p>
+    <h3>
+        Auto-Renewal</h3>
+    <p>
+        When a member has autorenewal and has an expired membership without retry failures,
+        MembershipScan will attempt to renew the membership by using the current MembershipTypeTemplate
+        associated with the member...</p>
+    <h4>
+        Membership Scan&#39;s Viewpoint</h4>
+<ol>
+    <li>Sort members by MemberType</li>
+    <li>Sort templates by MemberTypeTemplate</li>
+    <li>Scan members for invalid MemberType by checking against MemberTypeTemplate:<ol>
+        <li>If the MemberType does not satisfy existiing MemberTypeTemplate requirements -<ol>
+            <li>Search for a new MemberTypeTemplate in the MemberTypeTemplate&#39;s 
+                OutboundMemberTypeTemplates<ol>
+                    <li>If a valid OutboundMemberTypeTemplate is found -<ol>
+                        <li>Apply the OutboundMemberTypeTemplate&#39;s MemberType to the member.</li>
+                        </ol>
+                    </li>
+                    <li>If a valid OutboundMemberTypeTemplate is not found -<ol>
+                        <li>Raise a RenewalBlock on the member.</li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+        </li>
+        <li>Scan each root member and submember for expired membership<ol>
+            <li>If the MemberType does not have a RenewalBlock -<ol>
+                <li>Check member for SpinOff</li>
+                    </ol>
+                </li>
+                <li>Check root member and submembers against the member&#39;s MemberTypeTemplate</li>
+            </ol>
+        </li>
+    </ol>
+    <ul>
+        <li>Sort members by MemberType</li>
+        <li>Sort members by MemberTypeTemplate</li>
+        <li>Scan members for invalid MemberType by checking against the MemberTypeTemplate:<ul>
+            <li>If the MemberType does not satisfy existing MemberTypeTemplate Requirements -<ul>
+                <li>Search for a new MemberTypeTemplate in the MemberTypeTemplate&#39;s 
+                    InboundMemberTypeTemplates<ul>
+                        <li>If a valid InboundMemberTypeTemplate is found -<ul>
+                            <li>Apply the InboundMemberTypeTemplate&#39;s MemberType to the member.</li>
+                            </ul>
+                        </li>
+                        <li>If a valid InboundMemberTypeTemplate is not found -<ul>
+                            <li>Raise a RenewalBlock on the member.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                </ul>
+            </li>
+            </ul>
+        </li>
+        <li>Scan members for expired Memberships by checking against the MemberTypeTemplate:<ul>
+            <li>Scan member for SpinOff:
+                <ul>
+                    <li>If the member&#39;s MembershipType has SpinOff enabled the submember will spinoff
+                        automatically.
+                        <ul>
+                            <li>New membership information will be sent to the parent member informing of the spinoff.
+                                (Raise Notify Flag)</li>
+                            <li>New membership information will be sent to the member informing of the spinoff.
+                                (Raise Notify Flag)</li>
+                            <li>Member is now a root member. (Clear ParentMember)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>All root members are scanned for TypeTemplates that matches the new MembershipTree.
+                <ul>
+                    <li>If the member has no options that match, raise RenewalBlock.
+                        <ul>
+                            <li>Notify member and all submembers of blocked renewal and pending inactivity.</li>
+                            <li>Notify management of RenewalBlock.</li>
+                        </ul>
+                    </li>
+                    <li>If the member has one option that matches, apply the new MembershipTypeTemplate
+                        to root member&#39;s entire tree.
+                        <ul>
+                            <li>If the fee&#39;s cost is greater than or equal to the member&#39;s MembershipType.RenewalBlockOnIncreaseAmt,
+                                raise RenewalBlock.
+                                <ul>
+                                    <li>Notify member of blocked renewal.</li>
+                                    <li>Member can manually authorize the renewal.
+                                        <ul>
+                                            <li>If renewal fails -
+                                                <ul>
+                                                    <li>Iincrement RenewalRetry.</li>
+                                                    <li>Notify member of renewal failure.</li>
+                                                </ul>
+                                            </li>
+                                            <li>If renewal succeeds -
+                                                <ul>
+                                                    <li>Create new membership for member and submembers.</li>
+                                                    <li>Notify of renewal success.</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>If the fee&#39;s cost is less than the member&#39;s MembershipType.RenewalBlockOnIncreaseAmt,
+                                attempt membership renewal.
+                                <ul>
+                                    <li>If renewal fails -
+                                        <ul>
+                                            <li>Increment RenewalRetry.</li>
+                                            <li>Notify member of renewal failure.</li>
+                                        </ul>
+                                    </li>
+                                    <li>If renewal succeeds -
+                                        <ul>
+                                            <li>Create new membership for member and submembers.</li>
+                                            <li>Notify of renewal success.</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    <li>If the Root Member has two or more options that match, flag the root member as RenewalBlock.
+                            <ul>
+                                <li>Notify member of options.</li>
+                                <li>Member must select the from the available MembershipTypeTemplate. and authorize
+                                    renewal.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            </ul>
+    </ul>
+    <ul>
+        <li>If a submember has MembershipType.SpinOff enabled and has SpinOffRequested enabled,
+            the system to separate the submember from the parent member. The parent member will
+            renew at the rate that matches his new MembershipTree while the &#39;spin off&#39;
+            member will only renew if he or she has entered in Auto-Renewal information of their
+            own.xt time MembershipScan passes the member.</li>
+        <li>If the member exceeds the RenewalRetry maximum, then a renewal will and the member
+            and all child member&#39;s will be flagged as PendingInactivation.n a renewal will and the member
+            and all child member&#39;s will be flagged as PendingInactivation.</li>
+        <li>If the member renewal succeeds and a submember has a fee on his membership template
+            then the system will attempt to renew using the submember&#39;s information if available
+            using the same method as a root member. Parent members will be notified if co-payment
+            is not satisfied. (This is handled automatically by the MembershipScan)</li>
+    </ul>
+    <h3 style="font-weight: 700">
+        Optional TypeTemplates</h3>
+    <ul>
+        <li>Adult w/ Friend - $140 (Adult) (1,1) /> This is a kind of membership where an adult
+            has a friend who can himself bring any friend he wishes without consent from the
+            primary member in the membership. These are useful with gift memberships.<ul>
+                <li>Friend (Adult) (1)<ul>
+                    <li>Friend (Adult) (1)</li>
+                </ul>
+                </li>
+            </ul>
+        </li>
+        <li>Adult w/ Child and Friend - $180 (1,2;2)<br />
+            This is a kind of membership where a child can optionally invite a friend to class
+            for free.<ul>
+                <li>Child (Child) (2)<ul>
+                    <li>Friend (Child) (2)</li>
+                </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <h3>
+        Example Members</h3>
+    <table class="style1" bgcolor="#F6F8FD" border="0" cellpadding="3" 
+    cellspacing="0" frame="border">
+        <tr>
+            <td class="style2">
+                Member
+            </td>
+            <td class="style2">
+                MembershipType
+            </td>
+            <td class="style2">
+                MembershipTypeTemplate
+            </td>
+            <td class="style2">
+                MemberTypeTemplate Aggregate Cost
+            </td>
+            <td class="style2">
+                Memberships Available
+            </td>
+            <td class="style2">
+                Memberships Used
+            </td>
+            <td class="style2">
+                Memberships Unused
+            </td>
+            <td class="style2">
+                InboundMemberTypeTemplates
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Jon Marcus
+            </td>
+            <td>
+                Adult
+            </td>
+            <td>
+                Adult w/ 2 Children
+            </td>
+            <td>
+                $150
+            </td>
+            <td>
+                3
+            </td>
+            <td>
+                3
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Sarah Marcus
+            </td>
+            <td>
+                Child
+            </td>
+            <td>
+                Adult w/ 2 Children (1)
+            </td>
+            <td>
+                $0
+            </td>
+            <td>
+                1 (self)
+            </td>
+            <td>
+                1 (self)
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Bradley Marcus
+            </td>
+            <td>
+                Child
+            </td>
+            <td>
+                Adult w/ 2 Children (2)
+            </td>
+            <td>
+                $0
+            </td>
+            <td>
+                1 (self)
+            </td>
+            <td>
+                1 (self)
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Tim Stom
+            </td>
+            <td>
+                Adult
+            </td>
+            <td>
+                Adult
+            </td>
+            <td>
+                $85
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                Senior
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Mary Lucus
+            </td>
+            <td>
+                Parent
+            </td>
+            <td>
+                Parent w/ 3 Children
+            </td>
+            <td>
+                $125
+            </td>
+            <td>
+                4
+            </td>
+            <td>
+                4
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Sarah Lucas
+            </td>
+            <td>
+                Child
+            </td>
+            <td>
+                Parent w/ 3 Children (1)
+            </td>
+            <td>
+                $0
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Mark Lucas
+            </td>
+            <td>
+                Child
+            </td>
+            <td>
+                Parent w/ 3 Children (2)
+            </td>
+            <td>
+                $0
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                Adult (Forced)</td>
+        </tr>
+        <tr>
+            <td>
+                Jonas Alvarez-Lucas
+            </td>
+            <td>
+                Child
+            </td>
+            <td>
+                Parent w/ 3 Children (3)
+            </td>
+            <td>
+                $0
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Kyle Smit
+            </td>
+            <td>
+                Adult
+            </td>
+            <td>
+                Adult Couples
+            </td>
+            <td>
+                $140
+            </td>
+            <td>
+                2
+            </td>
+            <td>
+                2
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Margaret Smit
+            </td>
+            <td>
+                Adult
+            </td>
+            <td>
+                Adult Couples (1)
+            </td>
+            <td>
+                $0
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                0
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Timothy Smit
+            </td>
+            <td>
+                Adult
+            </td>
+            <td>
+                Adult w/ Friend
+            </td>
+            <td>
+                $140
+            </td>
+            <td>
+                2
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                1
+            </td>
+            <td>
+                None
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

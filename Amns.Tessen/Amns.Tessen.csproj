@@ -1,0 +1,729 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{60192F8D-C20D-4CBD-A488-9CA5B36B32EA}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Amns.Tessen</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Amns.Tessen</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <PublishUrl>http://localhost/Amns.Tessen/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Amns.PayFlowConnector, Version=1.1.2951.7230, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Amns.QBXmlConnector, Version=1.0.2951.7231, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="ComponentArt.Web.UI, Version=2007.2.1411.35, Culture=neutral, PublicKeyToken=9bc9f846553156bb, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Caching, Version=3.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=3.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Data, Version=3.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.ObjectBuilder, Version=1.0.51206.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.TeamSystem.Data.UnitTesting, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Web">
+      <Name>System.Web</Name>
+    </Reference>
+    <Reference Include="System.Web.Services">
+      <Name>System.Web.Services</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAccessControlGroup.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAccessControlGroupCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAccessControlGroupManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAttendanceEntry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAttendanceEntryCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAttendanceEntryCompareKey.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAttendanceEntryComparer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoAttendanceEntryManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoBulkAttendanceEntry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoBulkAttendanceEntryCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoBulkAttendanceEntryManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoClass.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoClassCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoClassDefinition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoClassDefinitionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoClassDefinitionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoClassManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMember.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMemberCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMemberCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMemberManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMembership.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMembershipCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMembershipManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMembershipTemplate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMembershipTemplateCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMembershipTemplateManager.cs" />
+    <Compile Include="DataObjects\DojoMemberType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMemberTypeCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMemberTypeManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMemberTypeTemplate.cs" />
+    <Compile Include="DataObjects\DojoMemberTypeTemplateCollection.cs" />
+    <Compile Include="DataObjects\DojoMemberTypeTemplateManager.cs" />
+    <Compile Include="DataObjects\DojoOrganization.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoOrganizationCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoOrganizationManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotion.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionFlag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionFlagCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionFlagManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionStatusCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoPromotionStatusManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoMembershipDayType.cs" />
+    <Compile Include="DataObjects\DojoRank.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoRankCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoRankCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoRankManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarClassUnitType.cs" />
+    <Compile Include="DojoRecurrenceType.cs" />
+    <Compile Include="DataObjects\DojoSeminar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarOption.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarOptionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarOptionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarRegistration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarRegistrationCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarRegistrationManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarRegistrationOption.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarRegistrationOptionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoSeminarRegistrationOptionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListJournalEntry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListJournalEntryCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListJournalEntryManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListJournalEntryType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListJournalEntryTypeCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListJournalEntryTypeManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListStatusCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestListStatusManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataObjects\DojoTestManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Finance\QBConnector.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Localization\Defaults.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Defaults.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Localization\PeopleStrings.de-DE.Designer.cs">
+      <DependentUpon>PeopleStrings.de-DE.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Localization\PeopleStrings.Designer.cs">
+      <DependentUpon>PeopleStrings.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Localization\Strings.de-DE.Designer.cs">
+      <DependentUpon>Strings.de-DE.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Localization\Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reporting\AttendanceReport.cs" />
+    <Compile Include="Reporting\MembershipReport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Startup\StartupHelper.cs" />
+    <Compile Include="Utilities\AttendanceScan.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\AttendanceScanner.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\MemberBuilder.cs" />
+    <Compile Include="Utilities\HashBuilder.cs" />
+    <Compile Include="Utilities\MembershipBuilderException.cs" />
+    <Compile Include="Utilities\MembershipPackage.cs" />
+    <Compile Include="Utilities\MemoRecorder.cs" />
+    <Compile Include="Utilities\Support\MembershipProcessor.cs" />
+    <Compile Include="Utilities\TessenItemFactory.cs" />
+    <Compile Include="Utilities\MembershipBuilder.cs" />
+    <Compile Include="Utilities\Support\MemberTypeTemplateWrapper.cs" />
+    <Compile Include="Utilities\TreeMaker.cs" />
+    <Compile Include="Utilities\SeminarRegistrationBuilder.cs" />
+    <Compile Include="Utilities\TessenHelper.cs" />
+    <Compile Include="Utilities\MemberExporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\MembershipScan.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\RappahanockHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\SeminarExporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\TestCandidate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\TestCandidateCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\TestListGenerator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\TreeMakerException.cs" />
+    <Compile Include="Web\UI\WebControls\AttendanceCard.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\AttendanceForm.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\CalendarHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoAttendanceEntryEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoAttendanceEntryGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoBulkAttendanceEntryEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoBulkAttendanceEntryGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoClassDefinitionEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoClassDefinitionGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoClassDeleteDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoClassEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoClassGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoMemberDeleteDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="Localization\Defaults.en-US.csv" />
+    <Compile Include="Web\UI\WebControls\DojoMemberEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoMemberGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoMemberQuickGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoMembershipDeleteDialog.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMembershipGrid.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMembershipTemplateDeleteDialog.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMembershipTemplateGrid.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMembershipTemplateView.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMembershipView.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMemberTypeGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoMemberTypeTemplateDeleteDialog.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMemberTypeTemplateGrid.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMemberTypeTemplateView.cs" />
+    <Compile Include="Web\UI\WebControls\DojoOrganizationDeleteDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoOrganizationEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoOrganizationGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoPromotionDeleteDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoPromotionEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoPromotionFlagDeleteDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoPromotionFlagEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoPromotionFlagGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoPromotionGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoRankEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoRankGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarOptionEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarOptionGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarPanel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarRegistrationDeleteDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarRegistrationEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarRegistrationGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarRegistrationOptionEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoSeminarRegistrationOptionGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestEligibilityGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListJournalEntryEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListJournalEntryGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListJournalEntryTypeEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListJournalEntryTypeGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListJournalEntryTypeView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListJournalEntryView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListStatusEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListStatusGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListStatusView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\DojoTestListView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\MemberListMailForm.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\MembershipsControl.cs" />
+    <Compile Include="Web\UI\WebControls\MembershipRenewalPanel.cs" />
+    <Compile Include="Web\UI\WebControls\MyMembershipPanel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\Panes\SeminarPane.cs" />
+    <Compile Include="Web\UI\WebControls\QuickTestEligibilityGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\QuickTestGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\SeminarRegistrationControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\TessenAboutDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\Panes\MemberPane.cs" />
+    <Compile Include="Web\UI\WebControls\Views\MemberViewPane.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\UI\WebControls\Views\TestViewPane.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\WebServices\ClassServices.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Web\WebServices\MemberServices.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Content Include="ChangeMod.txt" />
+    <Content Include="ExtRef\Amns.GreyFox.dll" />
+    <Content Include="ExtRef\Amns.PayFlowConnector.dll" />
+    <Content Include="ExtRef\Amns.QBXmlConnector.dll" />
+    <Content Include="ExtRef\Amns.Rappahanock.dll" />
+    <Content Include="ExtRef\ComponentArt.Web.UI.dll" />
+    <Content Include="ExtRef\Microsoft.Practices.EnterpriseLibrary.Caching.dll" />
+    <Content Include="ExtRef\Microsoft.Practices.EnterpriseLibrary.Common.dll" />
+    <Content Include="ExtRef\Microsoft.Practices.EnterpriseLibrary.Data.dll" />
+    <Content Include="ExtRef\Microsoft.Practices.ObjectBuilder.dll" />
+    <Content Include="MembershipTemplateProcessing.htm" />
+    <None Include="Tessen.NitroGen" />
+    <Compile Include="Web\UI\WebControls\DojoMembershipEditor.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMembershipTemplateEditor.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMemberTypeEditor.cs" />
+    <Compile Include="Web\UI\WebControls\DojoMemberTypeTemplateEditor.cs" />
+    <EmbeddedResource Include="Localization\Defaults.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Defaults.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\PeopleStrings.de-DE.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PeopleStrings.de-DE.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\PeopleStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PeopleStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\Strings.de-DE.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.de-DE.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Web\WebServices\ClassServices.resx">
+      <DependentUpon>ClassServices.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Web\WebServices\MemberServices.resx">
+      <DependentUpon>MemberServices.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Amns.GreyFox\Amns.GreyFox.csproj">
+      <Project>{FE092059-B12B-4DCF-AE1E-DB154D593EE8}</Project>
+      <Name>Amns.GreyFox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Amns.Rappahanock\Amns.Rappahanock.csproj">
+      <Project>{D8A6E6E9-6F40-4BE5-9EFC-F22F3DEA1892}</Project>
+      <Name>Amns.Rappahanock</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Statistics\" />
+    <Folder Include="Web\UI\WebControls\Grids\" />
+    <Folder Include="Web\UI\WebControls\Reports\" />
+    <Folder Include="Web\Utilities\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

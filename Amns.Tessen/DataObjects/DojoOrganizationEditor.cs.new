@@ -1,0 +1,614 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using Amns.GreyFox.People;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// Default web editor for DojoOrganization.
+	/// </summary>
+	[ToolboxData("<{0}:DojoOrganizationEditor runat=server></{0}:DojoOrganizationEditor>")]
+	public class DojoOrganizationEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+	{
+		private int dojoOrganizationID;
+		private DojoOrganization obj;
+		private bool loadFlag = false;
+		private bool resetOnAdd;
+		private bool editOnAdd;
+
+		protected ComponentArt.Web.UI.TabStrip tabstrip;
+		protected ComponentArt.Web.UI.MultiPage multipage;
+		protected Literal headerText;
+
+		#region Private Control Fields for Default Folder
+
+		protected ComponentArt.Web.UI.PageView DefaultView;
+		private TextBox tbName;
+		private TextBox tbDescription;
+		private ComponentArt.Web.UI.ComboBox comboLocation;
+		private MultiSelectBox msClassLocations;
+		private ComponentArt.Web.UI.ComboBox comboAdministrativeContact;
+
+		#endregion
+
+		#region Private Control Fields for _system Folder
+
+		protected ComponentArt.Web.UI.PageView _systemView;
+
+		#endregion
+
+		#region Private Control Fields for Web_Services Folder
+
+		protected ComponentArt.Web.UI.PageView Web_ServicesView;
+		private TextBox tbWebServiceUrl;
+		private TextBox tbRefreshTime;
+
+		#endregion
+
+		#region Private Control Fields for System Folder
+
+		protected ComponentArt.Web.UI.PageView SystemView;
+		private CheckBox cbIsPrimary;
+
+		#endregion
+
+		#region Private Control Fields for Membership Folder
+
+		protected ComponentArt.Web.UI.PageView MembershipView;
+		private ComponentArt.Web.UI.ComboBox comboDefaultMemberType;
+		private CheckBox cbPromotionFlagEnabled;
+
+		#endregion
+
+		private Button btOk;
+		private Button btCancel;
+		private Button btDelete;
+
+		#region Public Control Properties
+
+		[Bindable(true), Category("Data"), DefaultValue(0)]
+		public int DojoOrganizationID
+		{
+			get
+			{
+				return dojoOrganizationID;
+			}
+			set
+			{
+				loadFlag = true;
+				dojoOrganizationID = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool EditOnAdd
+		{
+			get
+			{
+				return editOnAdd;
+			}
+			set
+			{
+				editOnAdd = value;
+			}
+		}
+
+		#endregion
+
+		protected override void CreateChildControls()
+		{
+			Panel container = new Panel();
+			container.CssClass = this.CssClass;
+			Controls.Add(container);
+			Panel header = new Panel();
+			header.CssClass = "pHead";
+			container.Controls.Add(header);
+			headerText = new Literal();
+			header.Controls.Add(headerText);
+			Panel content = new Panel();
+			content.CssClass = "pContent";
+			container.Controls.Add(content);
+			#region Tab Strip
+
+			tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+			// Create the DefaultTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+			defaultTabLook.LookId = "DefaultTabLook";
+			defaultTabLook.CssClass = "DefaultTab";
+			defaultTabLook.HoverCssClass = "DefaultTabHover";
+			defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+			defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+			defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+			defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+			defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+			defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+			defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+			defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+			defaultTabLook.LeftIconWidth = Unit.Parse("3");
+			defaultTabLook.LeftIconHeight = Unit.Parse("21");
+			defaultTabLook.RightIconWidth = Unit.Parse("3");
+			defaultTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(defaultTabLook);
+
+			// Create the SelectedTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+			selectedTabLook.LookId = "SelectedTabLook";
+			selectedTabLook.CssClass = "SelectedTab";
+			selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+			selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+			selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+			selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+			selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+			selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+			selectedTabLook.LeftIconWidth = Unit.Parse("3");
+			selectedTabLook.LeftIconHeight = Unit.Parse("21");
+			selectedTabLook.RightIconWidth = Unit.Parse("3");
+			selectedTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(selectedTabLook);
+
+			tabstrip.ID = this.ID + "_TabStrip";
+			tabstrip.CssClass = "TopGroup";
+			tabstrip.DefaultItemLookId = "DefaultTabLook";
+			tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+			tabstrip.DefaultGroupTabSpacing = 1;
+			tabstrip.ImagesBaseUrl = "tabstrip_images/";
+			tabstrip.MultiPageId = this.ID + "_MultiPage";
+			content.Controls.Add(tabstrip);
+
+			#endregion
+
+			#region MultiPage
+
+			multipage = new ComponentArt.Web.UI.MultiPage();
+			multipage.ID = this.ID + "_MultiPage";
+			multipage.CssClass = "MultiPage";
+			content.Controls.Add(multipage);
+
+			#endregion
+
+			#region Child Controls for Default Folder
+
+			DefaultView = new ComponentArt.Web.UI.PageView();
+			DefaultView.CssClass = "PageContent";
+			multipage.PageViews.Add(DefaultView);
+
+			TabStripTab DefaultTab = new TabStripTab();
+			DefaultTab.Text = "Default";
+			DefaultTab.PageViewId = DefaultView.ID;
+			tabstrip.Tabs.Add(DefaultTab);
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Name of Organization</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbName = new TextBox();
+			tbName.EnableViewState = false;
+			DefaultView.Controls.Add(tbName);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Description</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbDescription = new TextBox();
+			tbDescription.EnableViewState = false;
+			DefaultView.Controls.Add(tbDescription);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Location</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboLocation = new ComponentArt.Web.UI.ComboBox();
+			comboLocation.CssClass = "comboBox";
+			comboLocation.HoverCssClass = "comboBoxHover";
+			comboLocation.FocusedCssClass = "comboBoxHover";
+			comboLocation.TextBoxCssClass = "comboTextBox";
+			comboLocation.DropDownCssClass = "comboDropDown";
+			comboLocation.ItemCssClass = "comboItem";
+			comboLocation.ItemHoverCssClass = "comboItemHover";
+			comboLocation.SelectedItemCssClass = "comboItemHover";
+			comboLocation.DropHoverImageUrl = "images/drop_hover.gif";
+			comboLocation.DropImageUrl = "images/drop.gif";
+			comboLocation.Width = Unit.Pixel(300);
+			DefaultView.Controls.Add(comboLocation);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ClassLocations</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			msClassLocations = new MultiSelectBox();
+			msClassLocations.Mode = MultiSelectBoxMode.DualSelect;
+			DefaultView.Controls.Add(msClassLocations);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">AdministrativeContact</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboAdministrativeContact = new ComponentArt.Web.UI.ComboBox();
+			comboAdministrativeContact.CssClass = "comboBox";
+			comboAdministrativeContact.HoverCssClass = "comboBoxHover";
+			comboAdministrativeContact.FocusedCssClass = "comboBoxHover";
+			comboAdministrativeContact.TextBoxCssClass = "comboTextBox";
+			comboAdministrativeContact.DropDownCssClass = "comboDropDown";
+			comboAdministrativeContact.ItemCssClass = "comboItem";
+			comboAdministrativeContact.ItemHoverCssClass = "comboItemHover";
+			comboAdministrativeContact.SelectedItemCssClass = "comboItemHover";
+			comboAdministrativeContact.DropHoverImageUrl = "images/drop_hover.gif";
+			comboAdministrativeContact.DropImageUrl = "images/drop.gif";
+			comboAdministrativeContact.Width = Unit.Pixel(300);
+			DefaultView.Controls.Add(comboAdministrativeContact);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Web Services Folder
+
+			Web_ServicesView = new ComponentArt.Web.UI.PageView();
+			Web_ServicesView.CssClass = "PageContent";
+			multipage.PageViews.Add(Web_ServicesView);
+
+			TabStripTab Web_ServicesTab = new TabStripTab();
+			Web_ServicesTab.Text = "Web Services";
+			Web_ServicesTab.PageViewId = Web_ServicesView.ID;
+			tabstrip.Tabs.Add(Web_ServicesTab);
+
+			Web_ServicesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			Web_ServicesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Webservice URL for external Tessen connections.</span>"));
+			Web_ServicesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbWebServiceUrl = new TextBox();
+			tbWebServiceUrl.EnableViewState = false;
+			Web_ServicesView.Controls.Add(tbWebServiceUrl);
+			Web_ServicesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			Web_ServicesView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			Web_ServicesView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">RefreshTime</span>"));
+			Web_ServicesView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbRefreshTime = new TextBox();
+			tbRefreshTime.EnableViewState = false;
+			Web_ServicesView.Controls.Add(tbRefreshTime);
+			Web_ServicesView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for System Folder
+
+			SystemView = new ComponentArt.Web.UI.PageView();
+			SystemView.CssClass = "PageContent";
+			multipage.PageViews.Add(SystemView);
+
+			TabStripTab SystemTab = new TabStripTab();
+			SystemTab.Text = "System";
+			SystemTab.PageViewId = SystemView.ID;
+			tabstrip.Tabs.Add(SystemTab);
+
+			SystemView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Primary Organization?</span>"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbIsPrimary = new CheckBox();
+			cbIsPrimary.EnableViewState = false;
+			SystemView.Controls.Add(cbIsPrimary);
+			SystemView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Membership Folder
+
+			MembershipView = new ComponentArt.Web.UI.PageView();
+			MembershipView.CssClass = "PageContent";
+			multipage.PageViews.Add(MembershipView);
+
+			TabStripTab MembershipTab = new TabStripTab();
+			MembershipTab.Text = "Membership";
+			MembershipTab.PageViewId = MembershipView.ID;
+			tabstrip.Tabs.Add(MembershipTab);
+
+			MembershipView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			MembershipView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">DefaultMemberType</span>"));
+			MembershipView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboDefaultMemberType = new ComponentArt.Web.UI.ComboBox();
+			comboDefaultMemberType.CssClass = "comboBox";
+			comboDefaultMemberType.HoverCssClass = "comboBoxHover";
+			comboDefaultMemberType.FocusedCssClass = "comboBoxHover";
+			comboDefaultMemberType.TextBoxCssClass = "comboTextBox";
+			comboDefaultMemberType.DropDownCssClass = "comboDropDown";
+			comboDefaultMemberType.ItemCssClass = "comboItem";
+			comboDefaultMemberType.ItemHoverCssClass = "comboItemHover";
+			comboDefaultMemberType.SelectedItemCssClass = "comboItemHover";
+			comboDefaultMemberType.DropHoverImageUrl = "images/drop_hover.gif";
+			comboDefaultMemberType.DropImageUrl = "images/drop.gif";
+			comboDefaultMemberType.Width = Unit.Pixel(300);
+			MembershipView.Controls.Add(comboDefaultMemberType);
+			MembershipView.Controls.Add(new LiteralControl("</span></div>"));
+
+			MembershipView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			MembershipView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Activates promotion limiting.</span>"));
+			MembershipView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			cbPromotionFlagEnabled = new CheckBox();
+			cbPromotionFlagEnabled.EnableViewState = false;
+			MembershipView.Controls.Add(cbPromotionFlagEnabled);
+			MembershipView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			Panel buttons = new Panel();
+			buttons.CssClass = "pButtons";
+			content.Controls.Add(buttons);
+
+			btOk = new Button();
+			btOk.Text = "OK";
+			btOk.Width = Unit.Pixel(72);
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			buttons.Controls.Add(btOk);
+
+			btCancel = new Button();
+			btCancel.Text = "Cancel";
+			btCancel.Width = Unit.Pixel(72);
+			btCancel.EnableViewState = false;
+			btCancel.CausesValidation = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			buttons.Controls.Add(btCancel);
+
+			btDelete = new Button();
+			btDelete.Text = "Delete";
+			btDelete.Width = Unit.Pixel(72);
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			buttons.Controls.Add(btDelete);
+
+			bind();
+			ChildControlsCreated = true;
+		}
+
+		private void bind()
+		{
+			#region Bind Default Child Data
+
+			GreyFoxContactManager locationManager = new GreyFoxContactManager("kitTessen_Locations");
+			GreyFoxContactCollection locationCollection = locationManager.GetCollection(string.Empty, string.Empty);
+			ComponentArt.Web.UI.ComboBoxItem LocationNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			LocationNullItem.Text = "Null";
+			LocationNullItem.Value = "Null";
+			comboLocation.Items.Add(LocationNullItem);
+			foreach(GreyFoxContact location in locationCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = location.ToString();
+				i.Value = location.ID.ToString();
+				comboLocation.Items.Add(i);
+			}
+
+			GreyFoxContactManager classLocationsManager = new GreyFoxContactManager("kitTessen_Locations");
+			GreyFoxContactCollection classLocationsCollection = classLocationsManager.GetCollection(string.Empty, string.Empty);
+			msClassLocations.Items.Add(new ListItem("Null", "Null"));
+			foreach(GreyFoxContact classLocations in classLocationsCollection)
+			{
+				ListItem i = new ListItem(classLocations.ToString(), classLocations.ID.ToString());
+				msClassLocations.Items.Add(i);
+			}
+
+			GreyFoxContactManager administrativeContactManager = new GreyFoxContactManager("sysGlobal_Contacts");
+			GreyFoxContactCollection administrativeContactCollection = administrativeContactManager.GetCollection(string.Empty, string.Empty);
+			ComponentArt.Web.UI.ComboBoxItem AdministrativeContactNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			AdministrativeContactNullItem.Text = "Null";
+			AdministrativeContactNullItem.Value = "Null";
+			comboAdministrativeContact.Items.Add(AdministrativeContactNullItem);
+			foreach(GreyFoxContact administrativeContact in administrativeContactCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = administrativeContact.ToString();
+				i.Value = administrativeContact.ID.ToString();
+				comboAdministrativeContact.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Membership Child Data
+
+			DojoMemberTypeManager defaultMemberTypeManager = new DojoMemberTypeManager();
+			DojoMemberTypeCollection defaultMemberTypeCollection = defaultMemberTypeManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem DefaultMemberTypeNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			DefaultMemberTypeNullItem.Text = "Null";
+			DefaultMemberTypeNullItem.Value = "Null";
+			comboDefaultMemberType.Items.Add(DefaultMemberTypeNullItem);
+			foreach(DojoMemberType defaultMemberType in defaultMemberTypeCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = defaultMemberType.ToString();
+				i.Value = defaultMemberType.ID.ToString();
+				comboDefaultMemberType.Items.Add(i);
+			}
+
+			#endregion
+
+		}
+
+		#region Events
+
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(dojoOrganizationID == 0)
+				obj = new DojoOrganization();
+			else
+				obj = new DojoOrganization(dojoOrganizationID);
+
+			obj.Name = tbName.Text;
+			obj.Description = tbDescription.Text;
+			if(comboLocation.SelectedItem != null && comboLocation.SelectedItem.Value != "Null")
+				obj.Location = GreyFoxContact.NewPlaceHolder("kitTessen_Locations", 
+					int.Parse(comboLocation.SelectedItem.Value));
+			else
+				obj.Location = null;
+
+			if(msClassLocations.IsChanged)
+			{
+				obj.ClassLocations = new GreyFoxContactCollection();
+				foreach(ListItem i in msClassLocations.Items)
+					if(i.Selected)
+						obj.ClassLocations.Add(GreyFoxContact.NewPlaceHolder("kitTessen_Locations", int.Parse(i.Value)));
+			}
+
+			if(comboAdministrativeContact.SelectedItem != null && comboAdministrativeContact.SelectedItem.Value != "Null")
+				obj.AdministrativeContact = GreyFoxContact.NewPlaceHolder("sysGlobal_Contacts", 
+					int.Parse(comboAdministrativeContact.SelectedItem.Value));
+			else
+				obj.AdministrativeContact = null;
+
+			obj.WebServiceUrl = tbWebServiceUrl.Text;
+			obj.RefreshTime = TimeSpan.Parse(tbRefreshTime.Text);
+			obj.IsPrimary = cbIsPrimary.Checked;
+			if(comboDefaultMemberType.SelectedItem != null && comboDefaultMemberType.SelectedItem.Value != "Null")
+				obj.DefaultMemberType = DojoMemberType.NewPlaceHolder(
+					int.Parse(comboDefaultMemberType.SelectedItem.Value));
+			else
+				obj.DefaultMemberType = null;
+
+			obj.PromotionFlagEnabled = cbPromotionFlagEnabled.Checked;
+			if(editOnAdd)
+				dojoOrganizationID = obj.Save();
+			else
+				obj.Save();
+
+			if(resetOnAdd)
+			{
+				tbName.Text = string.Empty;
+				tbDescription.Text = string.Empty;
+				tbWebServiceUrl.Text = string.Empty;
+				tbRefreshTime.Text = string.Empty;
+				cbIsPrimary.Checked = false;
+				cbPromotionFlagEnabled.Checked = false;
+				msLocation.SelectedIndex = 0;
+				msAdministrativeContact.SelectedIndex = 0;
+				msDefaultMemberType.SelectedIndex = 0;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+			DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnPreRender(EventArgs e)
+		{
+			if(loadFlag)
+			{
+				if(dojoOrganizationID > 0)
+				{
+					obj = new DojoOrganization(dojoOrganizationID);
+					headerText.Text = "Edit  - " + obj.ToString();
+				}
+				else if(dojoOrganizationID <= 0)
+				{
+					obj = new DojoOrganization();
+					headerText.Text = "Add ";
+				}
+
+				// Bind Default Data
+				tbName.Text = obj.Name;
+				tbDescription.Text = obj.Description;
+				if(obj.Location != null)
+					foreach(ListItem item in comboLocation.Items)
+						item.Selected = obj.Location.ID.ToString() == item.Value;
+					else
+						msLocation.SelectedIndex = 0;
+				foreach(ListItem i in msClassLocations.Items)
+					foreach(GreyFoxContact greyFoxContact in obj.ClassLocations)
+						if(i.Value == greyFoxContact.ID.ToString())
+						{
+							i.Selected = true;
+							break;
+						}
+				if(obj.AdministrativeContact != null)
+					foreach(ListItem item in comboAdministrativeContact.Items)
+						item.Selected = obj.AdministrativeContact.ID.ToString() == item.Value;
+					else
+						msAdministrativeContact.SelectedIndex = 0;
+
+				// Bind Web Services Data
+				tbWebServiceUrl.Text = obj.WebServiceUrl;
+				tbRefreshTime.Text = obj.RefreshTime.ToString();
+
+				// Bind System Data
+				cbIsPrimary.Checked = obj.IsPrimary;
+
+				// Bind Membership Data
+				if(obj.DefaultMemberType != null)
+					foreach(ListItem item in comboDefaultMemberType.Items)
+						item.Selected = obj.DefaultMemberType.ID.ToString() == item.Value;
+					else
+						msDefaultMemberType.SelectedIndex = 0;
+				cbPromotionFlagEnabled.Checked = obj.PromotionFlagEnabled;
+				tabstrip.SelectedTab = tabstrip.Tabs[0];
+			}
+		}
+
+		protected override void LoadViewState(object savedState)
+		{
+			if(savedState != null)
+			{
+				object[] myState = (object[]) savedState;
+				if(myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if(myState[1] != null)
+					dojoOrganizationID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{
+			object baseState = base.SaveViewState();
+			object[] myState = new object[2];
+			myState[0] = baseState;
+			myState[1] = dojoOrganizationID;
+			return myState;
+		}
+	}
+}
+

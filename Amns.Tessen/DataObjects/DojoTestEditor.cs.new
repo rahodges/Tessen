@@ -1,0 +1,1029 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.ComponentModel;
+using ComponentArt.Web.UI;
+using System.Web.UI.WebControls;
+using Amns.GreyFox.People;
+using Amns.Rappahanock;
+using Amns.GreyFox.Web.UI.WebControls;
+
+namespace Amns.Tessen.Web.UI.WebControls
+{
+	/// <summary>
+	/// Default web editor for DojoTest.
+	/// </summary>
+	[ToolboxData("<{0}:DojoTestEditor runat=server></{0}:DojoTestEditor>")]
+	public class DojoTestEditor : System.Web.UI.WebControls.WebControl, INamingContainer
+	{
+		private int dojoTestID;
+		private DojoTest obj;
+		private bool loadFlag = false;
+		private bool resetOnAdd;
+		private bool editOnAdd;
+
+		protected ComponentArt.Web.UI.TabStrip tabstrip;
+		protected ComponentArt.Web.UI.MultiPage multipage;
+		protected Literal headerText;
+
+		#region Private Control Fields for Default Folder
+
+		protected ComponentArt.Web.UI.PageView DefaultView;
+		private TextBox tbName;
+		private TextBox tbDescription;
+		private TextBox tbTestDate;
+		private ComponentArt.Web.UI.ComboBox comboLocation;
+
+		#endregion
+
+		#region Private Control Fields for _system Folder
+
+		protected ComponentArt.Web.UI.PageView _systemView;
+
+		#endregion
+
+		#region Private Control Fields for List_Generator Folder
+
+		protected ComponentArt.Web.UI.PageView List_GeneratorView;
+		private ComponentArt.Web.UI.ComboBox comboListMemberType1;
+		private ComponentArt.Web.UI.ComboBox comboListMemberType2;
+		private ComponentArt.Web.UI.ComboBox comboListMemberType3;
+
+		#endregion
+
+		#region Private Control Fields for Administration Folder
+
+		protected ComponentArt.Web.UI.PageView AdministrationView;
+		private ComponentArt.Web.UI.ComboBox comboPanelChief;
+		private ComponentArt.Web.UI.ComboBox comboPanelMember1;
+		private ComponentArt.Web.UI.ComboBox comboPanelMember2;
+		private ComponentArt.Web.UI.ComboBox comboPanelMember3;
+		private ComponentArt.Web.UI.ComboBox comboPanelMember4;
+		private ComponentArt.Web.UI.ComboBox comboPanelMember5;
+
+		#endregion
+
+		#region Private Control Fields for System Folder
+
+		protected ComponentArt.Web.UI.PageView SystemView;
+		private ComponentArt.Web.UI.ComboBox comboStatus;
+		private ComponentArt.Web.UI.ComboBox comboActiveTestList;
+
+		#endregion
+
+		#region Private Control Fields for Rappahanock Folder
+
+		protected ComponentArt.Web.UI.PageView RappahanockView;
+		private ComponentArt.Web.UI.ComboBox comboItem;
+
+		#endregion
+
+		private Button btOk;
+		private Button btCancel;
+		private Button btDelete;
+
+		#region Public Control Properties
+
+		[Bindable(true), Category("Data"), DefaultValue(0)]
+		public int DojoTestID
+		{
+			get
+			{
+				return dojoTestID;
+			}
+			set
+			{
+				loadFlag = true;
+				dojoTestID = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool ResetOnAdd
+		{
+			get
+			{
+				return resetOnAdd;
+			}
+			set
+			{
+				resetOnAdd = value;
+			}
+		}
+
+		[Bindable(true), Category("Behavior"), DefaultValue(false)]
+		public bool EditOnAdd
+		{
+			get
+			{
+				return editOnAdd;
+			}
+			set
+			{
+				editOnAdd = value;
+			}
+		}
+
+		#endregion
+
+		protected override void CreateChildControls()
+		{
+			Panel container = new Panel();
+			container.CssClass = this.CssClass;
+			Controls.Add(container);
+			Panel header = new Panel();
+			header.CssClass = "pHead";
+			container.Controls.Add(header);
+			headerText = new Literal();
+			header.Controls.Add(headerText);
+			Panel content = new Panel();
+			content.CssClass = "pContent";
+			container.Controls.Add(content);
+			#region Tab Strip
+
+			tabstrip = new ComponentArt.Web.UI.TabStrip();
+
+			// Create the DefaultTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook defaultTabLook = new ComponentArt.Web.UI.ItemLook();
+			defaultTabLook.LookId = "DefaultTabLook";
+			defaultTabLook.CssClass = "DefaultTab";
+			defaultTabLook.HoverCssClass = "DefaultTabHover";
+			defaultTabLook.LabelPaddingLeft = Unit.Parse("10");
+			defaultTabLook.LabelPaddingRight = Unit.Parse("10");
+			defaultTabLook.LabelPaddingTop = Unit.Parse("5");
+			defaultTabLook.LabelPaddingBottom = Unit.Parse("4");
+			defaultTabLook.LeftIconUrl = "tab_left_icon.gif";
+			defaultTabLook.RightIconUrl = "tab_right_icon.gif";
+			defaultTabLook.HoverLeftIconUrl = "hover_tab_left_icon.gif";
+			defaultTabLook.HoverRightIconUrl = "hover_tab_right_icon.gif";
+			defaultTabLook.LeftIconWidth = Unit.Parse("3");
+			defaultTabLook.LeftIconHeight = Unit.Parse("21");
+			defaultTabLook.RightIconWidth = Unit.Parse("3");
+			defaultTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(defaultTabLook);
+
+			// Create the SelectedTabLook instance and add it to the ItemLooks collection
+			ComponentArt.Web.UI.ItemLook selectedTabLook = new ComponentArt.Web.UI.ItemLook();
+			selectedTabLook.LookId = "SelectedTabLook";
+			selectedTabLook.CssClass = "SelectedTab";
+			selectedTabLook.LabelPaddingLeft = Unit.Parse("10");
+			selectedTabLook.LabelPaddingRight = Unit.Parse("10");
+			selectedTabLook.LabelPaddingTop = Unit.Parse("5");
+			selectedTabLook.LabelPaddingBottom = Unit.Parse("4");
+			selectedTabLook.LeftIconUrl = "selected_tab_left_icon.gif";
+			selectedTabLook.RightIconUrl = "selected_tab_right_icon.gif";
+			selectedTabLook.LeftIconWidth = Unit.Parse("3");
+			selectedTabLook.LeftIconHeight = Unit.Parse("21");
+			selectedTabLook.RightIconWidth = Unit.Parse("3");
+			selectedTabLook.RightIconHeight = Unit.Parse("21");
+			tabstrip.ItemLooks.Add(selectedTabLook);
+
+			tabstrip.ID = this.ID + "_TabStrip";
+			tabstrip.CssClass = "TopGroup";
+			tabstrip.DefaultItemLookId = "DefaultTabLook";
+			tabstrip.DefaultSelectedItemLookId = "SelectedTabLook";
+			tabstrip.DefaultGroupTabSpacing = 1;
+			tabstrip.ImagesBaseUrl = "tabstrip_images/";
+			tabstrip.MultiPageId = this.ID + "_MultiPage";
+			content.Controls.Add(tabstrip);
+
+			#endregion
+
+			#region MultiPage
+
+			multipage = new ComponentArt.Web.UI.MultiPage();
+			multipage.ID = this.ID + "_MultiPage";
+			multipage.CssClass = "MultiPage";
+			content.Controls.Add(multipage);
+
+			#endregion
+
+			#region Child Controls for Default Folder
+
+			DefaultView = new ComponentArt.Web.UI.PageView();
+			DefaultView.CssClass = "PageContent";
+			multipage.PageViews.Add(DefaultView);
+
+			TabStripTab DefaultTab = new TabStripTab();
+			DefaultTab.Text = "Default";
+			DefaultTab.PageViewId = DefaultView.ID;
+			tabstrip.Tabs.Add(DefaultTab);
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Name</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbName = new TextBox();
+			tbName.EnableViewState = false;
+			DefaultView.Controls.Add(tbName);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Description</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbDescription = new TextBox();
+			tbDescription.EnableViewState = false;
+			DefaultView.Controls.Add(tbDescription);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Test Date</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			tbTestDate = new TextBox();
+			tbTestDate.EnableViewState = false;
+			DefaultView.Controls.Add(tbTestDate);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			DefaultView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Location</span>"));
+			DefaultView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboLocation = new ComponentArt.Web.UI.ComboBox();
+			comboLocation.CssClass = "comboBox";
+			comboLocation.HoverCssClass = "comboBoxHover";
+			comboLocation.FocusedCssClass = "comboBoxHover";
+			comboLocation.TextBoxCssClass = "comboTextBox";
+			comboLocation.DropDownCssClass = "comboDropDown";
+			comboLocation.ItemCssClass = "comboItem";
+			comboLocation.ItemHoverCssClass = "comboItemHover";
+			comboLocation.SelectedItemCssClass = "comboItemHover";
+			comboLocation.DropHoverImageUrl = "images/drop_hover.gif";
+			comboLocation.DropImageUrl = "images/drop.gif";
+			comboLocation.Width = Unit.Pixel(300);
+			DefaultView.Controls.Add(comboLocation);
+			DefaultView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for List Generator Folder
+
+			List_GeneratorView = new ComponentArt.Web.UI.PageView();
+			List_GeneratorView.CssClass = "PageContent";
+			multipage.PageViews.Add(List_GeneratorView);
+
+			TabStripTab List_GeneratorTab = new TabStripTab();
+			List_GeneratorTab.Text = "List Generator";
+			List_GeneratorTab.PageViewId = List_GeneratorView.ID;
+			tabstrip.Tabs.Add(List_GeneratorTab);
+
+			List_GeneratorView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			List_GeneratorView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ListMemberType1</span>"));
+			List_GeneratorView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboListMemberType1 = new ComponentArt.Web.UI.ComboBox();
+			comboListMemberType1.CssClass = "comboBox";
+			comboListMemberType1.HoverCssClass = "comboBoxHover";
+			comboListMemberType1.FocusedCssClass = "comboBoxHover";
+			comboListMemberType1.TextBoxCssClass = "comboTextBox";
+			comboListMemberType1.DropDownCssClass = "comboDropDown";
+			comboListMemberType1.ItemCssClass = "comboItem";
+			comboListMemberType1.ItemHoverCssClass = "comboItemHover";
+			comboListMemberType1.SelectedItemCssClass = "comboItemHover";
+			comboListMemberType1.DropHoverImageUrl = "images/drop_hover.gif";
+			comboListMemberType1.DropImageUrl = "images/drop.gif";
+			comboListMemberType1.Width = Unit.Pixel(300);
+			List_GeneratorView.Controls.Add(comboListMemberType1);
+			List_GeneratorView.Controls.Add(new LiteralControl("</span></div>"));
+
+			List_GeneratorView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			List_GeneratorView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ListMemberType2</span>"));
+			List_GeneratorView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboListMemberType2 = new ComponentArt.Web.UI.ComboBox();
+			comboListMemberType2.CssClass = "comboBox";
+			comboListMemberType2.HoverCssClass = "comboBoxHover";
+			comboListMemberType2.FocusedCssClass = "comboBoxHover";
+			comboListMemberType2.TextBoxCssClass = "comboTextBox";
+			comboListMemberType2.DropDownCssClass = "comboDropDown";
+			comboListMemberType2.ItemCssClass = "comboItem";
+			comboListMemberType2.ItemHoverCssClass = "comboItemHover";
+			comboListMemberType2.SelectedItemCssClass = "comboItemHover";
+			comboListMemberType2.DropHoverImageUrl = "images/drop_hover.gif";
+			comboListMemberType2.DropImageUrl = "images/drop.gif";
+			comboListMemberType2.Width = Unit.Pixel(300);
+			List_GeneratorView.Controls.Add(comboListMemberType2);
+			List_GeneratorView.Controls.Add(new LiteralControl("</span></div>"));
+
+			List_GeneratorView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			List_GeneratorView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ListMemberType3</span>"));
+			List_GeneratorView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboListMemberType3 = new ComponentArt.Web.UI.ComboBox();
+			comboListMemberType3.CssClass = "comboBox";
+			comboListMemberType3.HoverCssClass = "comboBoxHover";
+			comboListMemberType3.FocusedCssClass = "comboBoxHover";
+			comboListMemberType3.TextBoxCssClass = "comboTextBox";
+			comboListMemberType3.DropDownCssClass = "comboDropDown";
+			comboListMemberType3.ItemCssClass = "comboItem";
+			comboListMemberType3.ItemHoverCssClass = "comboItemHover";
+			comboListMemberType3.SelectedItemCssClass = "comboItemHover";
+			comboListMemberType3.DropHoverImageUrl = "images/drop_hover.gif";
+			comboListMemberType3.DropImageUrl = "images/drop.gif";
+			comboListMemberType3.Width = Unit.Pixel(300);
+			List_GeneratorView.Controls.Add(comboListMemberType3);
+			List_GeneratorView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Administration Folder
+
+			AdministrationView = new ComponentArt.Web.UI.PageView();
+			AdministrationView.CssClass = "PageContent";
+			multipage.PageViews.Add(AdministrationView);
+
+			TabStripTab AdministrationTab = new TabStripTab();
+			AdministrationTab.Text = "Administration";
+			AdministrationTab.PageViewId = AdministrationView.ID;
+			tabstrip.Tabs.Add(AdministrationTab);
+
+			AdministrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PanelChief</span>"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboPanelChief = new ComponentArt.Web.UI.ComboBox();
+			comboPanelChief.CssClass = "comboBox";
+			comboPanelChief.HoverCssClass = "comboBoxHover";
+			comboPanelChief.FocusedCssClass = "comboBoxHover";
+			comboPanelChief.TextBoxCssClass = "comboTextBox";
+			comboPanelChief.DropDownCssClass = "comboDropDown";
+			comboPanelChief.ItemCssClass = "comboItem";
+			comboPanelChief.ItemHoverCssClass = "comboItemHover";
+			comboPanelChief.SelectedItemCssClass = "comboItemHover";
+			comboPanelChief.DropHoverImageUrl = "images/drop_hover.gif";
+			comboPanelChief.DropImageUrl = "images/drop.gif";
+			comboPanelChief.Width = Unit.Pixel(300);
+			AdministrationView.Controls.Add(comboPanelChief);
+			AdministrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			AdministrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PanelMember1</span>"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboPanelMember1 = new ComponentArt.Web.UI.ComboBox();
+			comboPanelMember1.CssClass = "comboBox";
+			comboPanelMember1.HoverCssClass = "comboBoxHover";
+			comboPanelMember1.FocusedCssClass = "comboBoxHover";
+			comboPanelMember1.TextBoxCssClass = "comboTextBox";
+			comboPanelMember1.DropDownCssClass = "comboDropDown";
+			comboPanelMember1.ItemCssClass = "comboItem";
+			comboPanelMember1.ItemHoverCssClass = "comboItemHover";
+			comboPanelMember1.SelectedItemCssClass = "comboItemHover";
+			comboPanelMember1.DropHoverImageUrl = "images/drop_hover.gif";
+			comboPanelMember1.DropImageUrl = "images/drop.gif";
+			comboPanelMember1.Width = Unit.Pixel(300);
+			AdministrationView.Controls.Add(comboPanelMember1);
+			AdministrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			AdministrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PanelMember2</span>"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboPanelMember2 = new ComponentArt.Web.UI.ComboBox();
+			comboPanelMember2.CssClass = "comboBox";
+			comboPanelMember2.HoverCssClass = "comboBoxHover";
+			comboPanelMember2.FocusedCssClass = "comboBoxHover";
+			comboPanelMember2.TextBoxCssClass = "comboTextBox";
+			comboPanelMember2.DropDownCssClass = "comboDropDown";
+			comboPanelMember2.ItemCssClass = "comboItem";
+			comboPanelMember2.ItemHoverCssClass = "comboItemHover";
+			comboPanelMember2.SelectedItemCssClass = "comboItemHover";
+			comboPanelMember2.DropHoverImageUrl = "images/drop_hover.gif";
+			comboPanelMember2.DropImageUrl = "images/drop.gif";
+			comboPanelMember2.Width = Unit.Pixel(300);
+			AdministrationView.Controls.Add(comboPanelMember2);
+			AdministrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			AdministrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PanelMember3</span>"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboPanelMember3 = new ComponentArt.Web.UI.ComboBox();
+			comboPanelMember3.CssClass = "comboBox";
+			comboPanelMember3.HoverCssClass = "comboBoxHover";
+			comboPanelMember3.FocusedCssClass = "comboBoxHover";
+			comboPanelMember3.TextBoxCssClass = "comboTextBox";
+			comboPanelMember3.DropDownCssClass = "comboDropDown";
+			comboPanelMember3.ItemCssClass = "comboItem";
+			comboPanelMember3.ItemHoverCssClass = "comboItemHover";
+			comboPanelMember3.SelectedItemCssClass = "comboItemHover";
+			comboPanelMember3.DropHoverImageUrl = "images/drop_hover.gif";
+			comboPanelMember3.DropImageUrl = "images/drop.gif";
+			comboPanelMember3.Width = Unit.Pixel(300);
+			AdministrationView.Controls.Add(comboPanelMember3);
+			AdministrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			AdministrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PanelMember4</span>"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboPanelMember4 = new ComponentArt.Web.UI.ComboBox();
+			comboPanelMember4.CssClass = "comboBox";
+			comboPanelMember4.HoverCssClass = "comboBoxHover";
+			comboPanelMember4.FocusedCssClass = "comboBoxHover";
+			comboPanelMember4.TextBoxCssClass = "comboTextBox";
+			comboPanelMember4.DropDownCssClass = "comboDropDown";
+			comboPanelMember4.ItemCssClass = "comboItem";
+			comboPanelMember4.ItemHoverCssClass = "comboItemHover";
+			comboPanelMember4.SelectedItemCssClass = "comboItemHover";
+			comboPanelMember4.DropHoverImageUrl = "images/drop_hover.gif";
+			comboPanelMember4.DropImageUrl = "images/drop.gif";
+			comboPanelMember4.Width = Unit.Pixel(300);
+			AdministrationView.Controls.Add(comboPanelMember4);
+			AdministrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			AdministrationView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">PanelMember5</span>"));
+			AdministrationView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboPanelMember5 = new ComponentArt.Web.UI.ComboBox();
+			comboPanelMember5.CssClass = "comboBox";
+			comboPanelMember5.HoverCssClass = "comboBoxHover";
+			comboPanelMember5.FocusedCssClass = "comboBoxHover";
+			comboPanelMember5.TextBoxCssClass = "comboTextBox";
+			comboPanelMember5.DropDownCssClass = "comboDropDown";
+			comboPanelMember5.ItemCssClass = "comboItem";
+			comboPanelMember5.ItemHoverCssClass = "comboItemHover";
+			comboPanelMember5.SelectedItemCssClass = "comboItemHover";
+			comboPanelMember5.DropHoverImageUrl = "images/drop_hover.gif";
+			comboPanelMember5.DropImageUrl = "images/drop.gif";
+			comboPanelMember5.Width = Unit.Pixel(300);
+			AdministrationView.Controls.Add(comboPanelMember5);
+			AdministrationView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for System Folder
+
+			SystemView = new ComponentArt.Web.UI.PageView();
+			SystemView.CssClass = "PageContent";
+			multipage.PageViews.Add(SystemView);
+
+			TabStripTab SystemTab = new TabStripTab();
+			SystemTab.Text = "System";
+			SystemTab.PageViewId = SystemView.ID;
+			tabstrip.Tabs.Add(SystemTab);
+
+			SystemView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Status</span>"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboStatus = new ComponentArt.Web.UI.ComboBox();
+			comboStatus.CssClass = "comboBox";
+			comboStatus.HoverCssClass = "comboBoxHover";
+			comboStatus.FocusedCssClass = "comboBoxHover";
+			comboStatus.TextBoxCssClass = "comboTextBox";
+			comboStatus.DropDownCssClass = "comboDropDown";
+			comboStatus.ItemCssClass = "comboItem";
+			comboStatus.ItemHoverCssClass = "comboItemHover";
+			comboStatus.SelectedItemCssClass = "comboItemHover";
+			comboStatus.DropHoverImageUrl = "images/drop_hover.gif";
+			comboStatus.DropImageUrl = "images/drop.gif";
+			comboStatus.Width = Unit.Pixel(300);
+			SystemView.Controls.Add(comboStatus);
+			SystemView.Controls.Add(new LiteralControl("</span></div>"));
+
+			SystemView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">ActiveTestList</span>"));
+			SystemView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboActiveTestList = new ComponentArt.Web.UI.ComboBox();
+			comboActiveTestList.CssClass = "comboBox";
+			comboActiveTestList.HoverCssClass = "comboBoxHover";
+			comboActiveTestList.FocusedCssClass = "comboBoxHover";
+			comboActiveTestList.TextBoxCssClass = "comboTextBox";
+			comboActiveTestList.DropDownCssClass = "comboDropDown";
+			comboActiveTestList.ItemCssClass = "comboItem";
+			comboActiveTestList.ItemHoverCssClass = "comboItemHover";
+			comboActiveTestList.SelectedItemCssClass = "comboItemHover";
+			comboActiveTestList.DropHoverImageUrl = "images/drop_hover.gif";
+			comboActiveTestList.DropImageUrl = "images/drop.gif";
+			comboActiveTestList.Width = Unit.Pixel(300);
+			SystemView.Controls.Add(comboActiveTestList);
+			SystemView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			#region Child Controls for Rappahanock Folder
+
+			RappahanockView = new ComponentArt.Web.UI.PageView();
+			RappahanockView.CssClass = "PageContent";
+			multipage.PageViews.Add(RappahanockView);
+
+			TabStripTab RappahanockTab = new TabStripTab();
+			RappahanockTab.Text = "Rappahanock";
+			RappahanockTab.PageViewId = RappahanockView.ID;
+			tabstrip.Tabs.Add(RappahanockTab);
+
+			RappahanockView.Controls.Add(new LiteralControl("<div class=\"inputrow\">"));
+			RappahanockView.Controls.Add(new LiteralControl("<span class=\"inputlabel\">Item</span>"));
+			RappahanockView.Controls.Add(new LiteralControl("<span class=\"inputfield\">"));
+			comboItem = new ComponentArt.Web.UI.ComboBox();
+			comboItem.CssClass = "comboBox";
+			comboItem.HoverCssClass = "comboBoxHover";
+			comboItem.FocusedCssClass = "comboBoxHover";
+			comboItem.TextBoxCssClass = "comboTextBox";
+			comboItem.DropDownCssClass = "comboDropDown";
+			comboItem.ItemCssClass = "comboItem";
+			comboItem.ItemHoverCssClass = "comboItemHover";
+			comboItem.SelectedItemCssClass = "comboItemHover";
+			comboItem.DropHoverImageUrl = "images/drop_hover.gif";
+			comboItem.DropImageUrl = "images/drop.gif";
+			comboItem.Width = Unit.Pixel(300);
+			RappahanockView.Controls.Add(comboItem);
+			RappahanockView.Controls.Add(new LiteralControl("</span></div>"));
+
+			#endregion
+
+			Panel buttons = new Panel();
+			buttons.CssClass = "pButtons";
+			content.Controls.Add(buttons);
+
+			btOk = new Button();
+			btOk.Text = "OK";
+			btOk.Width = Unit.Pixel(72);
+			btOk.EnableViewState = false;
+			btOk.Click += new EventHandler(ok_Click);
+			buttons.Controls.Add(btOk);
+
+			btCancel = new Button();
+			btCancel.Text = "Cancel";
+			btCancel.Width = Unit.Pixel(72);
+			btCancel.EnableViewState = false;
+			btCancel.CausesValidation = false;
+			btCancel.Click += new EventHandler(cancel_Click);
+			buttons.Controls.Add(btCancel);
+
+			btDelete = new Button();
+			btDelete.Text = "Delete";
+			btDelete.Width = Unit.Pixel(72);
+			btDelete.EnableViewState = false;
+			btDelete.Click += new EventHandler(delete_Click);
+			buttons.Controls.Add(btDelete);
+
+			bind();
+			ChildControlsCreated = true;
+		}
+
+		private void bind()
+		{
+			#region Bind Default Child Data
+
+			GreyFoxContactManager locationManager = new GreyFoxContactManager("kitTessen_Locations");
+			GreyFoxContactCollection locationCollection = locationManager.GetCollection(string.Empty, string.Empty);
+			ComponentArt.Web.UI.ComboBoxItem LocationNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			LocationNullItem.Text = "Null";
+			LocationNullItem.Value = "Null";
+			comboLocation.Items.Add(LocationNullItem);
+			foreach(GreyFoxContact location in locationCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = location.ToString();
+				i.Value = location.ID.ToString();
+				comboLocation.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind List Generator Child Data
+
+			DojoMemberTypeManager listMemberType1Manager = new DojoMemberTypeManager();
+			DojoMemberTypeCollection listMemberType1Collection = listMemberType1Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ListMemberType1NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ListMemberType1NullItem.Text = "Null";
+			ListMemberType1NullItem.Value = "Null";
+			comboListMemberType1.Items.Add(ListMemberType1NullItem);
+			foreach(DojoMemberType listMemberType1 in listMemberType1Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = listMemberType1.ToString();
+				i.Value = listMemberType1.ID.ToString();
+				comboListMemberType1.Items.Add(i);
+			}
+
+			DojoMemberTypeManager listMemberType2Manager = new DojoMemberTypeManager();
+			DojoMemberTypeCollection listMemberType2Collection = listMemberType2Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ListMemberType2NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ListMemberType2NullItem.Text = "Null";
+			ListMemberType2NullItem.Value = "Null";
+			comboListMemberType2.Items.Add(ListMemberType2NullItem);
+			foreach(DojoMemberType listMemberType2 in listMemberType2Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = listMemberType2.ToString();
+				i.Value = listMemberType2.ID.ToString();
+				comboListMemberType2.Items.Add(i);
+			}
+
+			DojoMemberTypeManager listMemberType3Manager = new DojoMemberTypeManager();
+			DojoMemberTypeCollection listMemberType3Collection = listMemberType3Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ListMemberType3NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ListMemberType3NullItem.Text = "Null";
+			ListMemberType3NullItem.Value = "Null";
+			comboListMemberType3.Items.Add(ListMemberType3NullItem);
+			foreach(DojoMemberType listMemberType3 in listMemberType3Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = listMemberType3.ToString();
+				i.Value = listMemberType3.ID.ToString();
+				comboListMemberType3.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Administration Child Data
+
+			DojoMemberManager panelChiefManager = new DojoMemberManager();
+			DojoMemberCollection panelChiefCollection = panelChiefManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem PanelChiefNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			PanelChiefNullItem.Text = "Null";
+			PanelChiefNullItem.Value = "Null";
+			comboPanelChief.Items.Add(PanelChiefNullItem);
+			foreach(DojoMember panelChief in panelChiefCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = panelChief.ToString();
+				i.Value = panelChief.ID.ToString();
+				comboPanelChief.Items.Add(i);
+			}
+
+			DojoMemberManager panelMember1Manager = new DojoMemberManager();
+			DojoMemberCollection panelMember1Collection = panelMember1Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem PanelMember1NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			PanelMember1NullItem.Text = "Null";
+			PanelMember1NullItem.Value = "Null";
+			comboPanelMember1.Items.Add(PanelMember1NullItem);
+			foreach(DojoMember panelMember1 in panelMember1Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = panelMember1.ToString();
+				i.Value = panelMember1.ID.ToString();
+				comboPanelMember1.Items.Add(i);
+			}
+
+			DojoMemberManager panelMember2Manager = new DojoMemberManager();
+			DojoMemberCollection panelMember2Collection = panelMember2Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem PanelMember2NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			PanelMember2NullItem.Text = "Null";
+			PanelMember2NullItem.Value = "Null";
+			comboPanelMember2.Items.Add(PanelMember2NullItem);
+			foreach(DojoMember panelMember2 in panelMember2Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = panelMember2.ToString();
+				i.Value = panelMember2.ID.ToString();
+				comboPanelMember2.Items.Add(i);
+			}
+
+			DojoMemberManager panelMember3Manager = new DojoMemberManager();
+			DojoMemberCollection panelMember3Collection = panelMember3Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem PanelMember3NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			PanelMember3NullItem.Text = "Null";
+			PanelMember3NullItem.Value = "Null";
+			comboPanelMember3.Items.Add(PanelMember3NullItem);
+			foreach(DojoMember panelMember3 in panelMember3Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = panelMember3.ToString();
+				i.Value = panelMember3.ID.ToString();
+				comboPanelMember3.Items.Add(i);
+			}
+
+			DojoMemberManager panelMember4Manager = new DojoMemberManager();
+			DojoMemberCollection panelMember4Collection = panelMember4Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem PanelMember4NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			PanelMember4NullItem.Text = "Null";
+			PanelMember4NullItem.Value = "Null";
+			comboPanelMember4.Items.Add(PanelMember4NullItem);
+			foreach(DojoMember panelMember4 in panelMember4Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = panelMember4.ToString();
+				i.Value = panelMember4.ID.ToString();
+				comboPanelMember4.Items.Add(i);
+			}
+
+			DojoMemberManager panelMember5Manager = new DojoMemberManager();
+			DojoMemberCollection panelMember5Collection = panelMember5Manager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem PanelMember5NullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			PanelMember5NullItem.Text = "Null";
+			PanelMember5NullItem.Value = "Null";
+			comboPanelMember5.Items.Add(PanelMember5NullItem);
+			foreach(DojoMember panelMember5 in panelMember5Collection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = panelMember5.ToString();
+				i.Value = panelMember5.ID.ToString();
+				comboPanelMember5.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind System Child Data
+
+			DojoTestListStatusManager statusManager = new DojoTestListStatusManager();
+			DojoTestListStatusCollection statusCollection = statusManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem StatusNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			StatusNullItem.Text = "Null";
+			StatusNullItem.Value = "Null";
+			comboStatus.Items.Add(StatusNullItem);
+			foreach(DojoTestListStatus status in statusCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = status.ToString();
+				i.Value = status.ID.ToString();
+				comboStatus.Items.Add(i);
+			}
+
+			DojoTestListManager activeTestListManager = new DojoTestListManager();
+			DojoTestListCollection activeTestListCollection = activeTestListManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ActiveTestListNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ActiveTestListNullItem.Text = "Null";
+			ActiveTestListNullItem.Value = "Null";
+			comboActiveTestList.Items.Add(ActiveTestListNullItem);
+			foreach(DojoTestList activeTestList in activeTestListCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = activeTestList.ToString();
+				i.Value = activeTestList.ID.ToString();
+				comboActiveTestList.Items.Add(i);
+			}
+
+			#endregion
+
+			#region Bind Rappahanock Child Data
+
+			RHItemManager itemManager = new RHItemManager();
+			RHItemCollection itemCollection = itemManager.GetCollection(string.Empty, string.Empty, null);
+			ComponentArt.Web.UI.ComboBoxItem ItemNullItem = new ComponentArt.Web.UI.ComboBoxItem();
+			ItemNullItem.Text = "Null";
+			ItemNullItem.Value = "Null";
+			comboItem.Items.Add(ItemNullItem);
+			foreach(RHItem item in itemCollection)
+			{
+				ComponentArt.Web.UI.ComboBoxItem i = new ComponentArt.Web.UI.ComboBoxItem();
+				i.Text = item.ToString();
+				i.Value = item.ID.ToString();
+				comboItem.Items.Add(i);
+			}
+
+			#endregion
+
+		}
+
+		#region Events
+
+		protected void ok_Click(object sender, EventArgs e)
+		{
+			if(dojoTestID == 0)
+				obj = new DojoTest();
+			else
+				obj = new DojoTest(dojoTestID);
+
+			obj.Name = tbName.Text;
+			obj.Description = tbDescription.Text;
+			obj.TestDate = DateTime.Parse(tbTestDate.Text);
+			if(comboLocation.SelectedItem != null && comboLocation.SelectedItem.Value != "Null")
+				obj.Location = GreyFoxContact.NewPlaceHolder("kitTessen_Locations", 
+					int.Parse(comboLocation.SelectedItem.Value));
+			else
+				obj.Location = null;
+
+			if(comboListMemberType1.SelectedItem != null && comboListMemberType1.SelectedItem.Value != "Null")
+				obj.ListMemberType1 = DojoMemberType.NewPlaceHolder(
+					int.Parse(comboListMemberType1.SelectedItem.Value));
+			else
+				obj.ListMemberType1 = null;
+
+			if(comboListMemberType2.SelectedItem != null && comboListMemberType2.SelectedItem.Value != "Null")
+				obj.ListMemberType2 = DojoMemberType.NewPlaceHolder(
+					int.Parse(comboListMemberType2.SelectedItem.Value));
+			else
+				obj.ListMemberType2 = null;
+
+			if(comboListMemberType3.SelectedItem != null && comboListMemberType3.SelectedItem.Value != "Null")
+				obj.ListMemberType3 = DojoMemberType.NewPlaceHolder(
+					int.Parse(comboListMemberType3.SelectedItem.Value));
+			else
+				obj.ListMemberType3 = null;
+
+			if(comboPanelChief.SelectedItem != null && comboPanelChief.SelectedItem.Value != "Null")
+				obj.PanelChief = DojoMember.NewPlaceHolder(
+					int.Parse(comboPanelChief.SelectedItem.Value));
+			else
+				obj.PanelChief = null;
+
+			if(comboPanelMember1.SelectedItem != null && comboPanelMember1.SelectedItem.Value != "Null")
+				obj.PanelMember1 = DojoMember.NewPlaceHolder(
+					int.Parse(comboPanelMember1.SelectedItem.Value));
+			else
+				obj.PanelMember1 = null;
+
+			if(comboPanelMember2.SelectedItem != null && comboPanelMember2.SelectedItem.Value != "Null")
+				obj.PanelMember2 = DojoMember.NewPlaceHolder(
+					int.Parse(comboPanelMember2.SelectedItem.Value));
+			else
+				obj.PanelMember2 = null;
+
+			if(comboPanelMember3.SelectedItem != null && comboPanelMember3.SelectedItem.Value != "Null")
+				obj.PanelMember3 = DojoMember.NewPlaceHolder(
+					int.Parse(comboPanelMember3.SelectedItem.Value));
+			else
+				obj.PanelMember3 = null;
+
+			if(comboPanelMember4.SelectedItem != null && comboPanelMember4.SelectedItem.Value != "Null")
+				obj.PanelMember4 = DojoMember.NewPlaceHolder(
+					int.Parse(comboPanelMember4.SelectedItem.Value));
+			else
+				obj.PanelMember4 = null;
+
+			if(comboPanelMember5.SelectedItem != null && comboPanelMember5.SelectedItem.Value != "Null")
+				obj.PanelMember5 = DojoMember.NewPlaceHolder(
+					int.Parse(comboPanelMember5.SelectedItem.Value));
+			else
+				obj.PanelMember5 = null;
+
+			if(comboStatus.SelectedItem != null && comboStatus.SelectedItem.Value != "Null")
+				obj.Status = DojoTestListStatus.NewPlaceHolder(
+					int.Parse(comboStatus.SelectedItem.Value));
+			else
+				obj.Status = null;
+
+			if(comboActiveTestList.SelectedItem != null && comboActiveTestList.SelectedItem.Value != "Null")
+				obj.ActiveTestList = DojoTestList.NewPlaceHolder(
+					int.Parse(comboActiveTestList.SelectedItem.Value));
+			else
+				obj.ActiveTestList = null;
+
+			if(comboItem.SelectedItem != null && comboItem.SelectedItem.Value != "Null")
+				obj.Item = RHItem.NewPlaceHolder(
+					int.Parse(comboItem.SelectedItem.Value));
+			else
+				obj.Item = null;
+
+			if(editOnAdd)
+				dojoTestID = obj.Save();
+			else
+				obj.Save();
+
+			if(resetOnAdd)
+			{
+				tbName.Text = string.Empty;
+				tbDescription.Text = string.Empty;
+				tbTestDate.Text = DateTime.Now.ToString();
+				msLocation.SelectedIndex = 0;
+				msListMemberType1.SelectedIndex = 0;
+				msListMemberType2.SelectedIndex = 0;
+				msListMemberType3.SelectedIndex = 0;
+				msPanelChief.SelectedIndex = 0;
+				msPanelMember1.SelectedIndex = 0;
+				msPanelMember2.SelectedIndex = 0;
+				msPanelMember3.SelectedIndex = 0;
+				msPanelMember4.SelectedIndex = 0;
+				msPanelMember5.SelectedIndex = 0;
+				msStatus.SelectedIndex = 0;
+				msActiveTestList.SelectedIndex = 0;
+				msItem.SelectedIndex = 0;
+			}
+
+			OnUpdated(EventArgs.Empty);
+		}
+
+		protected void cancel_Click(object sender, EventArgs e)
+		{
+			this.OnCancelled(EventArgs.Empty);
+		}
+
+		protected void delete_Click(object sender, EventArgs e)
+		{
+			this.OnDeleteClicked(EventArgs.Empty);
+		}
+
+		public event EventHandler Cancelled;
+		protected virtual void OnCancelled(EventArgs e)
+		{
+			if(Cancelled != null)
+				Cancelled(this, e);
+		}
+
+		public event EventHandler Updated;
+		protected virtual void OnUpdated(EventArgs e)
+		{
+			if(Updated != null)
+				Updated(this, e);
+		}
+
+		public event EventHandler DeleteClicked;
+		protected virtual void OnDeleteClicked(EventArgs e)
+		{
+			if(DeleteClicked != null)
+			DeleteClicked(this, e);
+		}
+
+		#endregion
+
+		protected override void OnPreRender(EventArgs e)
+		{
+			if(loadFlag)
+			{
+				if(dojoTestID > 0)
+				{
+					obj = new DojoTest(dojoTestID);
+					headerText.Text = "Edit  - " + obj.ToString();
+				}
+				else if(dojoTestID <= 0)
+				{
+					obj = new DojoTest();
+					headerText.Text = "Add ";
+				}
+
+				// Bind Default Data
+				tbName.Text = obj.Name;
+				tbDescription.Text = obj.Description;
+				tbTestDate.Text = obj.TestDate.ToString();
+				if(obj.Location != null)
+					foreach(ListItem item in comboLocation.Items)
+						item.Selected = obj.Location.ID.ToString() == item.Value;
+					else
+						msLocation.SelectedIndex = 0;
+
+				// Bind List Generator Data
+				if(obj.ListMemberType1 != null)
+					foreach(ListItem item in comboListMemberType1.Items)
+						item.Selected = obj.ListMemberType1.ID.ToString() == item.Value;
+					else
+						msListMemberType1.SelectedIndex = 0;
+				if(obj.ListMemberType2 != null)
+					foreach(ListItem item in comboListMemberType2.Items)
+						item.Selected = obj.ListMemberType2.ID.ToString() == item.Value;
+					else
+						msListMemberType2.SelectedIndex = 0;
+				if(obj.ListMemberType3 != null)
+					foreach(ListItem item in comboListMemberType3.Items)
+						item.Selected = obj.ListMemberType3.ID.ToString() == item.Value;
+					else
+						msListMemberType3.SelectedIndex = 0;
+
+				// Bind Administration Data
+				if(obj.PanelChief != null)
+					foreach(ListItem item in comboPanelChief.Items)
+						item.Selected = obj.PanelChief.ID.ToString() == item.Value;
+					else
+						msPanelChief.SelectedIndex = 0;
+				if(obj.PanelMember1 != null)
+					foreach(ListItem item in comboPanelMember1.Items)
+						item.Selected = obj.PanelMember1.ID.ToString() == item.Value;
+					else
+						msPanelMember1.SelectedIndex = 0;
+				if(obj.PanelMember2 != null)
+					foreach(ListItem item in comboPanelMember2.Items)
+						item.Selected = obj.PanelMember2.ID.ToString() == item.Value;
+					else
+						msPanelMember2.SelectedIndex = 0;
+				if(obj.PanelMember3 != null)
+					foreach(ListItem item in comboPanelMember3.Items)
+						item.Selected = obj.PanelMember3.ID.ToString() == item.Value;
+					else
+						msPanelMember3.SelectedIndex = 0;
+				if(obj.PanelMember4 != null)
+					foreach(ListItem item in comboPanelMember4.Items)
+						item.Selected = obj.PanelMember4.ID.ToString() == item.Value;
+					else
+						msPanelMember4.SelectedIndex = 0;
+				if(obj.PanelMember5 != null)
+					foreach(ListItem item in comboPanelMember5.Items)
+						item.Selected = obj.PanelMember5.ID.ToString() == item.Value;
+					else
+						msPanelMember5.SelectedIndex = 0;
+
+				// Bind System Data
+				if(obj.Status != null)
+					foreach(ListItem item in comboStatus.Items)
+						item.Selected = obj.Status.ID.ToString() == item.Value;
+					else
+						msStatus.SelectedIndex = 0;
+				if(obj.ActiveTestList != null)
+					foreach(ListItem item in comboActiveTestList.Items)
+						item.Selected = obj.ActiveTestList.ID.ToString() == item.Value;
+					else
+						msActiveTestList.SelectedIndex = 0;
+
+				// Bind Rappahanock Data
+				if(obj.Item != null)
+					foreach(ListItem item in comboItem.Items)
+						item.Selected = obj.Item.ID.ToString() == item.Value;
+					else
+						msItem.SelectedIndex = 0;
+				tabstrip.SelectedTab = tabstrip.Tabs[0];
+			}
+		}
+
+		protected override void LoadViewState(object savedState)
+		{
+			if(savedState != null)
+			{
+				object[] myState = (object[]) savedState;
+				if(myState[0] != null)
+					base.LoadViewState(myState[0]);
+				if(myState[1] != null)
+					dojoTestID = (int) myState[1];
+			}
+		}
+
+		protected override object SaveViewState()
+		{
+			object baseState = base.SaveViewState();
+			object[] myState = new object[2];
+			myState[0] = baseState;
+			myState[1] = dojoTestID;
+			return myState;
+		}
+	}
+}
+
